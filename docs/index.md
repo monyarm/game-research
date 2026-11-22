@@ -46,4 +46,3 @@ Every page carries a confidence value and a last-verified date. Corrections stay
 - Game data, executables, ISOs, SWF/FLV files, audio, video, or extracted assets.
 - Decompiled code or leaked source.
 - Private correspondence, invite links, or credentials.
-- Claims that a runtime or upstream project has accepted work when it has not.
