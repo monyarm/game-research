@@ -22,9 +22,9 @@ A single place for my research on adventure and visual novel games: the engines 
 
 ## Games
 
-| Game | Engine | Page |
+| Game | Engine | Notes |
 | --- | --- | --- |
-| *Scooby-Doo! Case File #3: Frights! Camera! Mystery!* | [Scooby-Doo! Case File #3: Flash runtime](engines/scooby-doo-case-file-3-flash.md) | Covered in the Case File #3 Flash runtime note. No dedicated game page yet. |
+| *Scooby-Doo! Case File #3: Frights! Camera! Mystery!* | [Scooby-Doo! Case File #3: Flash runtime](engines/scooby-doo-case-file-3-flash.md) | The Learning Company branding; Windows 2000/XP; 2007 CD-ROM re-release; disc required. |
 
 ## How to read these notes
 

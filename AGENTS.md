@@ -246,7 +246,12 @@ Engine and format `maturity`:
 
 - Every engine page under `## Engines`.
 - Every game page under `## Games`.
-- A game that is only covered inside an engine page, with a note that no dedicated page exists yet.
+- A game that is only covered inside an engine page.
+
+The Games table columns are `Game | Engine | Notes`.
+
+- `Game` is a link to the game page when one exists. Otherwise use the italic title with no link.
+- `Notes` carries developer or brand, platform, and availability information.
 
 When adding a page:
 
