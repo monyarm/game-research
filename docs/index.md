@@ -18,7 +18,7 @@ A single place for my research on adventure and visual novel games: the engines 
 
 | Engine | Kind | Games | Notes |
 | --- | --- | --- | --- |
-| [Flash](engines/flash.md) | Multimedia runtime / SWF | *Scooby-Doo! Case File #3: Frights! Camera! Mystery!* | Runs well in Ruffle. |
+| [Flash](engines/flash.md) | Multimedia runtime / SWF | *Scooby-Doo! Case File #3: Frights! Camera! Mystery!* | 117 SWFs, all v8/AVM1; stock Flash Player 8 projector; runs well in Ruffle. |
 
 ## Games
 

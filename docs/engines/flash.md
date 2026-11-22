@@ -44,7 +44,7 @@ Flash is a multimedia runtime for vector graphics, animation, audio, video, and 
 | --- | --- |
 | Kind | Multimedia runtime |
 | Primary format | SWF |
-| Scripting | ActionScript, AVM1 and AVM2 |
+| Scripting | ActionScript 1/2 (AVM1) in the inspected copy; Flash also supports AVM2/AS3 |
 | Modern runtime | Ruffle |
 | Status here | Documented; no engine code in this repository |
 | Confidence | Mixed: platform facts are established; game-specific claims come from project analysis |
@@ -57,21 +57,42 @@ This page covers Flash as a runtime. It does not document a specific game's file
 
 ## Evidence from this project
 
-The release examined for these notes ships its content as SWF files, with additional FLV, MP3, WAV, and video assets. It runs well under Ruffle.
+A local 2007 Windows re-release was inspected with JPEXS Free Flash Decompiler 26.2.1 and ExifTool 13.59.
+
+The directory is flat: 183 files, 144,858,832 bytes. The SWF set totals 125,045,416 bytes: 60 uncompressed `FWS`, 57 zlib `CWS`, none LZMA. The remaining files include 36 MP3, 3 WAV, 1 AIF, 2 FLV (On2 VP6 video with MP3 audio), and Windows installer/runtime files. The largest SWFs are `scooby_base.swf` (23,500,810 bytes), `CDC.swf` (10,239,921), `Title.swf` (6,666,801), and `StuntExtravaganza.swf` (6,556,643).
 
 | Claim | Evidence level | Basis |
 | --- | --- | --- |
-| The payload is built from SWF files | Observed | File inventory from the project's disc analysis |
-| The release also contains FLV, MP3, WAV, and video assets | Observed | Same inventory |
-| Ruffle runs the release well | Observed | Recorded playtest in project correspondence |
-| There is no conventional native engine to reverse | Inferred | Game logic and presentation are carried by the SWF payload; this does not rule out a small launcher |
+| The installed copy contains 117 SWF files totaling 125,045,416 bytes | Observed | Recursive file inventory |
+| Every SWF reports SWF version 8 | Observed | Header scan across all 117 files |
+| The content is AVM1/AS2, not AVM2/AS3 | Observed | No `DoABC` tags in any SWF; 316 `DoAction`/`DoInitAction` tags total |
+| The SWFs use standard tags and standard compression | Observed | Tag inventory: `PlaceObject2`, `DefineShape`, `DefineSprite`, `DefineSound`, `DefineFont3`, `ExportAssets`; `FWS` and `CWS` only |
+| The launcher is a stock Macromedia Flash Player 8.0 r22 projector | Observed | PE version info: company `Macromedia, Inc.`, original name `SAFlashPlayer.exe`, file version `8.0.22.0` |
+| `scooby_base.swf` is mainly an asset library | Observed | 23.5 MB of font and `DefineSound`/`ExportAssets` entries, with only six frame scripts |
+| There is no custom container, encryption, or native engine layer | Observed | Normal SWF structure; no custom tags or encrypted SWFs found |
+| Game logic is distributed across the SWF set | Inferred | `CDC.swf` and `Title.swf` contain game-facing scripts; the launcher itself is only a player |
+| Ruffle runs the release well | Observed | Reported in the project's playtest notes; not re-run for this page |
 | The compatibility matrix is complete | Unverified | Only the tested paths are known |
 
-The inventory and playtest above are project records. They have not been re-run for this page, so treat the page as a working note rather than a final compatibility report.
+The inspected copy contains 117 SWFs. Do not generalize that count to other releases without checking them. The playtest result is a data point, not a guarantee for every scene or asset.
+
+## Detection
+
+These hashes identify the inspected files. They are recorded here; the files themselves are not distributed in this repository.
+
+| File | Size (bytes) | MD5 (first 5,000 bytes) | SHA-256 |
+| --- | ---: | --- | --- |
+| `Scooby-Doo! Case File #3 - Frights! Camera! Mystery!.exe` | 1,622,602 | `3bfe46ec07db957d7ee208acb1cc49e7` | `d7f97359ad1d076bac5795c92ca7c992b9f13e240e1ebd7e21cdf5229624e991` |
+| `scooby_base.swf` | 23,500,810 | `a433df7006d45ecf501b0d80581d70c4` | `b2fd40e0433629581137ea267b9c12b36f884a08bccb94cef3f52a9f77440b56` |
+| `CDC.swf` | 10,239,921 | `39897c1da5290d86192f456c3d310b70` | `ac2527aef8fbacbc50d10f778ca8e1dab05b9a2ae9f4dec48c54ea94d44b663f` |
+| `Title.swf` | 6,666,801 | `579a9cd759933925a527230325c4b7eb` | `2ed21fd5972b66ee6d2da15714c616bc67ca40ba98644e849945bb7a65b9667b` |
+| `TLC.swf` | 34,390 | `460fa31e7252237a3fbb3e044f2ab439` | `926d225e8687774386386ff84a0d7c09a0b3c950ff22b0179e014be5ab63a261` |
+
+The size/MD5 pair is the form ScummVM detection tables use. The SHA-256 is the whole-file identity used by this repository.
 
 ## Running it today
 
-Ruffle is an open-source Flash Player emulator written in Rust. It runs natively on desktop platforms and in browsers through WebAssembly. It supports ActionScript 1, 2, and 3, but compatibility is still incomplete, so a title that runs well is a data point rather than a guarantee for every SWF.
+Ruffle is an open-source Flash Player emulator written in Rust. It runs natively on desktop platforms and in browsers through WebAssembly. The inspected copy is AVM1/AS2 content, which Ruffle supports well. Compatibility is still incomplete in general, so a title that runs well is a data point rather than a guarantee for every SWF.
 
 To try a SWF:
 
@@ -84,16 +105,16 @@ Do not commit the SWF, FLV, audio, video, or extracted assets to this repository
 
 ## Known use
 
-*Scooby-Doo! Case File #3: Frights! Camera! Mystery!* ships as a SWF payload and runs well in Ruffle. No dedicated game page yet.
+The inspected 2007 Windows re-release of *Scooby-Doo! Case File #3: Frights! Camera! Mystery!* ships as 117 SWF files plus MP3, WAV, AIF, and FLV media. The launcher is a stock Flash Player 8 projector. It runs well under Ruffle. No dedicated game page yet.
 
 ## What to record next
 
 - Ruffle version and platform used for the playtest.
-- The exact launch path, and whether a loader SWF is required.
-- ActionScript version per SWF, if it can be determined.
-- Any assets loaded from outside the main SWF.
+- The exact launch path, and which SWF the projector opens first.
+- Whether the 117-file set is complete, or whether the release has optional content elsewhere.
+- Any assets loaded from outside the main SWF, especially by relative path.
 - Visible defects, with a timestamp or scene description.
-- The exact size, MD5 of the first 5,000 bytes, and full-file SHA-256 for the tested build, if it can be identified without distributing it.
+- The MD5 of the first 5,000 bytes and SHA-256 for any additional tested build.
 
 ## Sources
 
