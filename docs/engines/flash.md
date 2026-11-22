@@ -93,7 +93,7 @@ Do not commit the SWF, FLV, audio, video, or extracted assets to this repository
 - ActionScript version per SWF, if it can be determined.
 - Any assets loaded from outside the main SWF.
 - Visible defects, with a timestamp or scene description.
-- A checksum for the tested build, if the build can be identified without distributing it.
+- The exact size, MD5 of the first 5,000 bytes, and full-file SHA-256 for the tested build, if it can be identified without distributing it.
 
 ## Sources
 

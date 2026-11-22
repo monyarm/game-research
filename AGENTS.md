@@ -134,11 +134,15 @@ maturity: documented
 samples:
   - name: example.swf
     size: 123456
+    md5_first_5k: "00000000000000000000000000000000"
     sha256: "0000000000000000000000000000000000000000000000000000000000000000"
 ```
 
 - `extension` — include the leading dot.
 - `samples` — cite samples by metadata only. Never commit the sample.
+- `size` — exact size in bytes. This is part of the ScummVM detection pair and is not optional when a hash is present.
+- `md5_first_5k` — MD5 of the first 5,000 bytes, lowercase hex. This is the hash ScummVM detection uses, paired with `size`.
+- `sha256` — SHA-256 of the whole file, lowercase hex. Use it as the stable sample identity.
 
 ### Index fields
 
@@ -164,10 +168,11 @@ samples:
 2. `## At a glance` table: year, developer, publisher, platforms, engine, formats.
 3. `## What it is` — one paragraph, no marketing copy.
 4. `## Engine and formats` — link the engine and format pages.
-5. `## Evidence` — what was checked, with hashes or paths where safe.
-6. `## Running or preserving it` — practical notes.
-7. `## Open questions`.
-8. `## Sources`.
+5. `## Detection` — file name, exact size, MD5 of the first 5,000 bytes, SHA-256.
+6. `## Evidence` — what was checked, with hashes or paths where safe.
+7. `## Running or preserving it` — practical notes.
+8. `## Open questions`.
+9. `## Sources`.
 
 ### Format page
 
@@ -175,15 +180,25 @@ samples:
 2. `## At a glance` table: extension, used by, sample, maturity.
 3. `## Layout` — tables for headers and records.
 4. `## Fields` — one table per structure.
-5. `## Evidence` — sample name, size, SHA-256, and what was checked.
+5. `## Detection` — sample name, exact size, MD5 of the first 5,000 bytes, SHA-256, and what was checked.
 6. `## Unknowns`.
 7. `## Sources`.
+
+Detection tables pair the exact byte count with both hashes:
+
+```markdown
+| File | Size (bytes) | MD5 (first 5,000 bytes) | SHA-256 |
+| --- | ---: | --- | --- |
+| `example.swf` | 123456 | `00000000000000000000000000000000` | `0000...` |
+```
+
+The size/MD5 pair is what ScummVM detection tables use. The SHA-256 is the whole-file identity used by this repository.
 
 ## Evidence model
 
 Use these labels in the body when a claim's status is not obvious:
 
-- **Observed** — directly checked against a file, binary, disc, or reproducible test. Include the sample name, size, hash, offset, or command where safe.
+- **Observed** — directly checked against a file, binary, disc, or reproducible test. Include the sample name, exact size, MD5 of the first 5,000 bytes, full-file SHA-256, offset, or command where safe.
 - **Inferred** — follows from observed evidence, but the conclusion itself was not directly checked. State the reasoning.
 - **Unverified** — a lead from correspondence, a catalog, or a secondary source. Do not present it as a finding.
 
@@ -211,6 +226,7 @@ Engine and format `maturity`:
 - Hex values use `0x` and lowercase digits: `0x45F3DC`.
 - File sizes are decimal bytes unless a binary unit is explicitly useful.
 - SHA-256 values are lowercase hex, in backticks.
+- MD5 values are lowercase hex, in backticks. Never give an MD5 without saying which bytes it covers. For ScummVM detection, record the MD5 of the first 5,000 bytes and the exact file size together.
 - Dates are absolute: `2026-11-22`, not "last week".
 - Prefer tables for fields, offsets, and evidence.
 - Link sources inline; do not leave bare URLs in body prose.

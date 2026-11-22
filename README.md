@@ -6,7 +6,7 @@ A single place for my research on adventure and visual novel games: the engines 
 
 ## What this repo is
 
-This is a research notebook, not a game archive or an engine implementation. The Markdown in `docs/` is the source of truth. MkDocs Material turns it into a searchable static site, and GitHub Actions publishes that site to GitHub Pages.
+This is a research notebook, not a game archive or an engine implementation. It is also not a contribution pipeline: nothing here implies that ScummVM or another upstream project has accepted, merged, or endorsed the work. The Markdown in `docs/` is the source of truth. MkDocs Material turns it into a searchable static site, and GitHub Actions publishes that site to GitHub Pages.
 
 The notes are meant to answer questions like:
 
@@ -38,9 +38,8 @@ Corrections stay visible. If a claim changes, the page records the correction in
 - Game data, executables, ISOs, SWF/FLV files, audio, video, or extracted assets.
 - Decompiled code or leaked source.
 - Private correspondence, invite links, or credentials.
-- Claims that an upstream project has accepted work when it has not.
 
-Samples are cited by name, size, and SHA-256 where possible, not committed to the repo.
+Samples are cited by name, exact file size, MD5 of the first 5,000 bytes, and SHA-256 where possible, not committed to the repo. The size/MD5 pair is the form ScummVM's detection tables use.
 
 ## Local development
 
