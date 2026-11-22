@@ -1,0 +1,16 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# MkDocs output
+site/
+.cache/
+
+# Local scratch space
+work/
+
+# Editors and OS files
+.idea/
+.vscode/
+.DS_Store
