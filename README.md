@@ -17,7 +17,7 @@ The notes are meant to answer questions like:
 
 ## Current coverage
 
-- **Flash** — SWF-based runtime; runs well in Ruffle.
+- **Scooby-Doo! Case File #3: Flash runtime** — the SWF-based release, its 117-file payload, and running it in Ruffle.
 
 The landing page at `docs/index.md` lists every engine and game with a page or a substantive note. It is updated by hand until there are enough pages to justify generated indexes.
 

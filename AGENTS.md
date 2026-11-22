@@ -6,7 +6,7 @@ The goal is not to collect games. The goal is to explain how they work, what the
 
 ## Current scope
 
-The only content page is `docs/engines/flash.md`.
+The only content page is `docs/engines/scooby-doo-case-file-3-flash.md`.
 
 Do not add engines, games, formats, companies, guides, or notes unless the user explicitly asks for them. Do not expand scope from a reference repository, a catalog lead, or a passing mention. A single strong page is better than a site full of stubs.
 
@@ -38,7 +38,7 @@ When the user does ask for a new page, follow the page rules below and add it to
 ├── docs/
 │   ├── index.md
 │   └── engines/
-│       └── flash.md
+│       └── scooby-doo-case-file-3-flash.md
 ├── .github/
 │   └── workflows/
 │       └── pages.yml
@@ -61,7 +61,7 @@ Every page starts with YAML frontmatter. Use these enums exactly.
 
 ```yaml
 ---
-title: Flash
+title: "Scooby-Doo! Case File #3: Flash runtime"
 description: "One sentence that explains what the page covers."
 type: engine
 status: draft
@@ -70,7 +70,7 @@ tags:
   - flash
   - swf
 aliases:
-  - Adobe Flash
+  - Flash
 sources:
   - title: Ruffle
     url: https://ruffle.rs/
@@ -273,7 +273,7 @@ uv run mkdocs build --strict
 ## Git and deployment
 
 - Work on `main` for small docs changes; use a branch for anything larger.
-- Commit messages describe the research change, not the tooling: `docs: add Flash runtime note`.
+- Commit messages describe the research change, not the tooling: `docs: add Case File #3 Flash runtime note`.
 - Do not commit `site/`, `.venv/`, `work/`, caches, or game data.
 - The Pages workflow builds on pull requests and deploys on `main`.
 - GitHub Pages source must be set to **GitHub Actions** in repository settings.
@@ -282,7 +282,7 @@ uv run mkdocs build --strict
 ## Gotchas
 
 - MkDocs paths are case-sensitive on Linux. Use lowercase kebab-case filenames.
-- Relative links are resolved from the current page's directory. From `docs/games/foo.md`, an engine page is `../engines/flash.md`.
+- Relative links are resolved from the current page's directory. From `docs/games/foo.md`, an engine page is `../engines/scooby-doo-case-file-3-flash.md`.
 - A link to a page that is not in `nav` still builds, but it will not appear in navigation. Add the nav entry.
 - `mkdocs build --strict` fails on broken internal links and unrecognized nav entries. Fix the link; do not disable strict mode.
 - YAML frontmatter breaks on unquoted `:` and `!`. Quote descriptions and titles that contain them.

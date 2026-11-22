@@ -18,13 +18,13 @@ A single place for my research on adventure and visual novel games: the engines 
 
 | Engine | Kind | Games | Notes |
 | --- | --- | --- | --- |
-| [Flash](engines/flash.md) | Multimedia runtime / SWF | *Scooby-Doo! Case File #3: Frights! Camera! Mystery!* | 117 SWFs, all v8/AVM1; stock Flash Player 8 projector; runs well in Ruffle. |
+| [Scooby-Doo! Case File #3: Flash runtime](engines/scooby-doo-case-file-3-flash.md) | Multimedia runtime / SWF | *Scooby-Doo! Case File #3: Frights! Camera! Mystery!* | 117 SWFs, all v8/AVM1; stock Flash Player 8 projector; runs well in Ruffle. |
 
 ## Games
 
 | Game | Engine | Page |
 | --- | --- | --- |
-| *Scooby-Doo! Case File #3: Frights! Camera! Mystery!* | [Flash](engines/flash.md) | Covered in the Flash engine note. No dedicated game page yet. |
+| *Scooby-Doo! Case File #3: Frights! Camera! Mystery!* | [Scooby-Doo! Case File #3: Flash runtime](engines/scooby-doo-case-file-3-flash.md) | Covered in the Case File #3 Flash runtime note. No dedicated game page yet. |
 
 ## How to read these notes
 

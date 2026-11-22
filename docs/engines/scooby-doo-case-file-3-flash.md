@@ -1,6 +1,6 @@
 ---
-title: Flash
-description: "Flash as a game runtime: SWF content, ActionScript, and running it today with Ruffle."
+title: "Scooby-Doo! Case File #3: Flash runtime"
+description: "The Flash runtime as used by Scooby-Doo! Case File #3: Frights! Camera! Mystery!, including the inspected SWF set and detection hashes."
 type: engine
 status: draft
 confidence: mixed
@@ -9,15 +9,16 @@ tags:
   - swf
   - ruffle
   - runtime
+  - scooby-doo
+  - case-file-3
 aliases:
+  - Flash
   - Adobe Flash
   - Macromedia Flash
   - Flash Player
+  - Case File #3 Flash runtime
 platforms:
-  - Web
   - Windows
-  - macOS
-  - Linux
 games: []
 formats: []
 maturity: documented
@@ -34,9 +35,11 @@ last_verified: 2026-11-22
 ai_assisted: true
 ---
 
-# Flash
+# Scooby-Doo! Case File #3: Flash runtime
 
 Flash is a multimedia runtime for vector graphics, animation, audio, video, and scripted interaction. Games built for it ship as SWF files, often with external media such as FLV, MP3, or WAV. Adobe ended support for Flash Player on 2020-12-31; Ruffle is the practical way to run this content today.
+
+This page is specific to *Scooby-Doo! Case File #3: Frights! Camera! Mystery!*. Other Flash games may use a different ActionScript version, loader, asset layout, or launcher, so do not treat these findings as a general Flash compatibility guide.
 
 ## At a glance
 
@@ -46,14 +49,14 @@ Flash is a multimedia runtime for vector graphics, animation, audio, video, and 
 | Primary format | SWF |
 | Scripting | ActionScript 1/2 (AVM1) in the inspected copy; Flash also supports AVM2/AS3 |
 | Modern runtime | Ruffle |
-| Status here | Documented; no engine code in this repository |
-| Confidence | Mixed: platform facts are established; game-specific claims come from project analysis |
+| Status here | Documented for this release; no engine code in this repository |
+| Confidence | Mixed: runtime and file facts were observed for this copy; compatibility was not exhaustively tested |
 
 ## Why it matters
 
-Some adventure games do not have a conventional native engine to reverse. The game logic and presentation are carried by SWF files and the Flash runtime. Preservation work is therefore runtime compatibility work: parse the SWF, implement the ActionScript virtual machine and display list, and reproduce the original timing.
+This game does not have a conventional native engine to reverse. Its logic and presentation are carried by SWF files and the Flash runtime. Preservation work is therefore runtime compatibility work: parse the SWF, implement the ActionScript virtual machine and display list, and reproduce the original timing.
 
-This page covers Flash as a runtime. It does not document a specific game's file layout or story content.
+This page documents the runtime and file-level evidence for one release. It does not cover story content or serve as a general SWF reference.
 
 ## Evidence from this project
 

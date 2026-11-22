@@ -35,7 +35,7 @@ theme:
 nav:
   - Home: index.md
   - Engines:
-      - Flash: engines/flash.md
+      - "Scooby-Doo! Case File #3: Flash runtime": engines/scooby-doo-case-file-3-flash.md
 
 plugins:
   - search
