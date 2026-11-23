@@ -4,9 +4,18 @@ This repository is a public research notebook about adventure and visual novel g
 
 The goal is not to collect games. The goal is to explain how they work, what their files contain, and what the evidence is.
 
+## Agent setup
+
+Load these two skills with the `skill` tool before doing anything else in a session, and keep them active for the whole session:
+
+1. `ponytail` — the smallest change that fully solves the task. This repository rewards deleting a stale sentence over adding a paragraph.
+2. `caveman` — terse replies. Chat answers should be short; the long prose belongs in `docs/`, not in the conversation.
+
+If a session runs without them, that is a mistake, not a preference to be re-litigated. Do not "stop caveman" or switch to a heavier level unless the user asks.
+
 ## Current scope
 
-The only content page is `docs/engines/scooby-doo-case-file-3-flash.md`.
+The content pages are the engine pages under `docs/engines/` and their subpages, plus the game pages under `docs/games/`. The landing page lists them.
 
 Do not add engines, games, formats, companies, guides, or notes unless the user explicitly asks for them. Do not expand scope from a reference repository, a catalog lead, or a passing mention. A single strong page is better than a site full of stubs.
 
@@ -15,7 +24,7 @@ When the user does ask for a new page, follow the page rules below and add it to
 ## Non-negotiables
 
 1. **Evidence before prose.** Every factual claim must be observed, inferred with stated reasoning, or marked unverified. Do not turn a lead into a finding.
-2. **Never fabricate.** No invented playtests, hashes, offsets, version numbers, source quotes, or compatibility results. If something was not checked, say so.
+2. **Never fabricate.** No invented playtests, hashes, offsets, version numbers, source quotes, file contents, or compatibility results. If something was not checked, say so.
 3. **No game data.** Do not commit executables, ISOs, disc images, SWF/FLV files, audio, video, extracted assets, screenshots of copyrighted material, or save files.
 4. **No decompiled code or leaked source.** Discuss behaviour and formats in original prose. Do not paste decompiler output, disassembly, or reconstructed source.
 5. **No copying from reference repositories.** Reference material is for orientation only. Write original prose, cite public sources, and do not reproduce another project's structure, wording, code, or assets.
@@ -25,6 +34,7 @@ When the user does ask for a new page, follow the page rules below and add it to
 9. **Private stays private.** Do not publish private correspondence, invite links, email addresses, credentials, or unannounced repositories.
 10. **Credit the human.** The maintainer is Simeon Armenchev (monyarm). AI assistance is disclosed in frontmatter, not used to claim authorship of research.
 11. **No piracy, no warez.** Do not reference warez, abandonware, ROM or disc-image sites, and do not describe where or how game copies are supplied. Write about the copy that was inspected, and say plainly when a title was not inspected.
+12. **No invented releases.** Mention a platform, port, or edition only when a source or the inspected material shows it exists. Do not assert exclusivity either — "only", "sole release", "no other version" are claims that need evidence, and a single inspected copy is not that evidence. Describe the copy and stop.
 
 ## Repository layout
 
@@ -331,6 +341,8 @@ uv run mkdocs build --strict
 - Do not put game data in `docs/assets/`. Text and diagrams only.
 - Do not use an image of a game screen as evidence unless the user explicitly asks and the rights situation is clear.
 - Do not mention private repositories, private branches, or unpublished correspondence.
+- `mkdocs build --strict` does not catch a fused table: two rows joined by `||` still parse as a table and still build. Before committing, grep the changed pages for `||` and for rows whose cell count does not match the header.
+- Before finishing a page, grep it for `only`, `sole`, `exclusiv`, and `no other`. Near enough every hit is an unverified release or scope claim (see non-negotiable 12).
 
 ## AI policy
 
