@@ -37,7 +37,7 @@ The games are written in [Squirrel](https://www.squirrel-lang.org/), but not in 
 | Language | Squirrel 2.1.2 (`Squirrel 2.1.2 stable` in the Fantasy and Symphony executables) |
 | Layer 1 | `.nut` modules — engine object model, loaded with `dofile` |
 | Layer 2 | `.ks` scene scripts — per-scene content, referenced by name from a scene table |
-| Compilation | Offline; the payload holds source pages, or compressed source on Concerto, and compressed compiled units |
+| Compilation | Offline; source ships either as pages in `SYSTEM` or compressed in `SCENE_ID`, alongside compiled units |
 | Serialisation | Squirrel closure streams (`FA FA` + `SQIR` reversed), plus plain `.nut` source |
 | Debug support | Present in Concerto, stripped from Fantasy and Symphony |
 
@@ -112,7 +112,7 @@ So the answer to "is it really just Squirrel" is: the language and the VM are st
 
 ## Extracting the `.nut` source
 
-On Fantasy and Symphony the source is plain text inside `SYSTEM.BIN`, so the splitter below is enough. Concerto's source is compressed, so decompress it first with the tool linked on the [textures](textures.md) page — its Socio Art Logic handler covers `SCENE_ID.BIN` — and run this walk over the decompressed output instead.
+Fantasy and Symphony keep the source as plain text pages inside `SYSTEM.BIN`, so the splitter below is enough: it walks the index, appends the text records in order and skips the compiled ones. Concerto has no `SYSTEM` pair at all — its modules sit in `SCENE_ID.BIN` as compressed blocks, and decoding those blocks is the whole job, with no record walk on top. Decoding one gives plain Squirrel source, not scene data: the first block at offset 2048 declares 34,593 bytes and begins `/** * レイヤアクションモジュール関係クラス */ class LayerModule {`, and roughly a third of its blocks contain `function` definitions. The codec is on the [textures](textures.md) page along with the MIT tool that already implements it for `SCENE_ID.BIN`.
 
 ```quickbms
 # zero-no-tsukaima-nut-dump.bms
@@ -134,9 +134,10 @@ On Fantasy and Symphony the source is plain text inside `SYSTEM.BIN`, so the spl
 #   Symphony (SLPS_258.98)  SYSTEM.HD   31 text records, 339,371 bytes
 #   Fantasy  (SLPS_258.30)  SYSTEM.HD   30 text records, 285,957 bytes
 #
-# Concerto (SLPS_257.08) ships no SYSTEM pair: its source sits in compressed
-# blocks inside SCENE_ID.BIN. Decompress that first with the tool linked on
-# the textures page, then run this walk over the decompressed bytes.
+# Concerto (SLPS_257.08) ships no SYSTEM pair. Its modules sit in SCENE_ID.BIN as
+# compressed blocks, and decoding them is the whole job: no record walk. The
+# codec and the MIT tool that implements it are on the textures page, and the
+# decoded stream is plain Squirrel source, so it needs no further processing.
 #
 # The text is Shift-JIS with ASCII syntax, so the output is readable source
 # with Japanese comments.
