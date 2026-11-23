@@ -36,6 +36,13 @@ nav:
   - Home: index.md
   - Engines:
       - "Scooby-Doo! Case File #3: Flash runtime": engines/scooby-doo-case-file-3-flash.md
+      - "Soalo (Zero no Tsukaima PS2 engine)":
+          - Overview: engines/zero-no-tsukaima-soalo.md
+          - Executable findings: engines/zero-no-tsukaima-soalo/executable.md
+          - Payload layout: engines/zero-no-tsukaima-soalo/payload.md
+          - Archives: engines/zero-no-tsukaima-soalo/archives.md
+          - Scripts: engines/zero-no-tsukaima-soalo/scripts.md
+          - Textures: engines/zero-no-tsukaima-soalo/textures.md
 
 plugins:
   - search

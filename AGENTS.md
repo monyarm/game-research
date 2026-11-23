@@ -24,6 +24,7 @@ When the user does ask for a new page, follow the page rules below and add it to
 8. **No upstream claims.** Do not imply that a runtime, emulator, or upstream project has accepted, merged, or endorsed anything here.
 9. **Private stays private.** Do not publish private correspondence, invite links, email addresses, credentials, or unannounced repositories.
 10. **Credit the human.** The maintainer is Simeon Armenchev (monyarm). AI assistance is disclosed in frontmatter, not used to claim authorship of research.
+11. **No piracy, no warez.** Do not reference warez, abandonware, ROM or disc-image sites, and do not describe where or how game copies are supplied. Write about the copy that was inspected, and say plainly when a title was not inspected.
 
 ## Repository layout
 
@@ -162,6 +163,31 @@ samples:
 8. `## What to record next` — concrete, checkable next steps.
 9. `## Sources` — public links.
 
+### Engine subpages
+
+An engine page with enough material becomes an overview plus subpages, one per piece of evidence:
+
+```text
+docs/engines/<engine>.md            # overview, title, games, formats, what to record next
+docs/engines/<engine>/executable.md # what the binary contains
+docs/engines/<engine>/payload.md    # container contents and record maps
+docs/engines/<engine>/archives.md   # the pair/archive mechanism and its extractor
+docs/engines/<engine>/scripts.md    # scripting layers and their extractor
+docs/engines/<engine>/textures.md   # image or audio blocks and their carver
+```
+
+Extraction tooling belongs on the archive, script, or texture subpage that describes the format it reads, written as a commented **quickbms** script. Do not leave a script on the overview page.
+
+### Extraction tooling
+
+All file-format extraction and conversion in this repository is a **quickbms** script, unless an existing implementation with a licence compatible with **GPL-3.0** — the licence of the runtime these loaders are written for — already does the job. In that case the page links that implementation instead and does not reimplement it.
+
+- Compatibility is judged against GPL-3.0, not against this documentation's MIT licence. A permissive licence such as MIT qualifies; a proprietary or GPL-incompatible one does not.
+- The linked implementation may be in any language. It does not have to be C or C++.
+- Say which licence it is under, and do not vendor its code.
+
+If no compatible implementation exists, write quickbms. Do not add Python, shell, or other implementations of a format reader. The hash helper `tools/sample-hashes.py` is not a format reader; it stays.
+
 ### Game page
 
 1. H1 matching `title`.
@@ -193,6 +219,14 @@ Detection tables pair the exact byte count with both hashes:
 ```
 
 The size/MD5 pair is what ScummVM detection tables use. The SHA-256 is the whole-file identity used by this repository.
+
+Generate these rows with `tools/sample-hashes.py` rather than by hand, so the byte count and both hashes always come from the same read:
+
+```sh
+python3 tools/sample-hashes.py SLPS_258.98 SYSTEM.BIN
+```
+
+It prints the header and one row per file, ready to paste into a detection table. `--plain` prints `name`, `size`, `md5_first_5k`, and `sha256` as tab-separated key/value pairs instead, for notes and scratch files. Do not transcribe hashes from another tool's output; if a value was produced elsewhere, re-run the script on the file.
 
 ## Evidence model
 
@@ -231,6 +265,7 @@ Engine and format `maturity`:
 - Prefer tables for fields, offsets, and evidence.
 - Link sources inline; do not leave bare URLs in body prose.
 - No marketing language, no "revolutionary", no "obviously", no "clearly proves".
+- Describe inspected material neutrally: "the inspected copy", "this copy", "not inspected". Never name a distribution site, never discuss how a copy was supplied, and never argue about the provenance or legality of a copy.
 - Do not use a footnote to hide a weak claim. Put the evidence level in the sentence or table.
 - Do not write "TODO" on a `reviewed` or `stable` page. Use `## Open questions` instead.
 - Keep corrections visible:
@@ -250,8 +285,9 @@ Engine and format `maturity`:
 
 The Games table columns are `Game | Engine | Notes`.
 
-- `Game` is a link to the game page when one exists. Otherwise use the italic title with no link.
+- `Game` is a link to the game page when one exists, and an outward link when it does not.
 - `Notes` carries developer or brand, platform, and availability information.
+- Link a game title outward only when there is no game page: visual novels to their VNDB entry, adventure games to the ScummVM wiki or MobyGames.
 
 When adding a page:
 
