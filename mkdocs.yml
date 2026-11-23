@@ -43,6 +43,20 @@ nav:
           - Archives: engines/zero-no-tsukaima-soalo/archives.md
           - Scripts: engines/zero-no-tsukaima-soalo/scripts.md
           - Textures: engines/zero-no-tsukaima-soalo/textures.md
+      - "CLS engine":
+          - Overview: engines/cls.md
+          - Executable findings: engines/cls/executable.md
+          - Archives: engines/cls/archives.md
+          - Decoding OOCH: engines/cls/decoding.md
+      - "TB_D3P engine":
+          - Overview: engines/tb-d3p.md
+          - Executable findings: engines/tb-d3p/executable.md
+          - Section containers: engines/tb-d3p/containers.md
+          - Script: engines/tb-d3p/script.md
+          - Event scripts: engines/tb-d3p/events.md
+          - Textures: engines/tb-d3p/textures.md
+  - Games:
+      - "Tiger & Bunny — Hero's Day": games/tiger-and-bunny-heros-day.md
 
 plugins:
   - search
