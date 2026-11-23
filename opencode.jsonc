@@ -1,0 +1,13 @@
+{
+  "mcp": {
+    "rea": {
+      "type": "local",
+      "command": [
+        "/home/monyarm/Documents/Github/game-research/.gc-roots/nodejs-22.23.4/bin/node",
+        "/home/monyarm/.local/share/rea/node_modules/.bin/rea",
+        "mcp"
+      ],
+      "enabled": true
+    }
+  }
+}

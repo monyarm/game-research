@@ -10,6 +10,9 @@ site/
 # Local scratch space
 work/
 
+# Nix gc roots (machine-specific symlinks into /nix/store)
+.gc-roots/
+
 # Editors and OS files
 .idea/
 .vscode/
