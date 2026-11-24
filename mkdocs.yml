@@ -56,11 +56,12 @@ nav:
           - Script: engines/tb-d3p/script.md
           - Event scripts: engines/tb-d3p/events.md
           - Textures: engines/tb-d3p/textures.md
+      - "Bothtec PC-98 adventure engine (working title)":
+          - Overview: engines/bothtec-pc98.md
+          - Payload: engines/bothtec-pc98/payload.md
+          - Pictures: engines/bothtec-pc98/textures.md
   - Games:
       - "Tiger & Bunny — Hero's Day": games/tiger-and-bunny-heros-day.md
-      - "Ranma ½: Hiryuu Densetsu": games/ranma-half-hiryuu-densetsu.md
-  - Formats:
-      - "Bothtec PC-98 four-plane picture": formats/bothtec-pc98-picture.md
   - Notes:
       - Open questions: notes/open-questions.md
 

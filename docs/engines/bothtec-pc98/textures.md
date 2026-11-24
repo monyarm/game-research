@@ -1,45 +1,37 @@
 ---
-title: "Bothtec PC-98 four-plane picture"
-description: "The headerless .R1/.G1/.E1/.B1 bitplane set and .ALG analog palette used by Bothtec's PC-9801 games."
-type: format
+title: "Bothtec PC-98 pictures"
+description: "The headerless four-plane picture set and analog palette used by the Bothtec PC-98 engine, with a quickbms converter."
+type: engine
 status: draft
 confidence: observed
 tags:
+  - bothtec
   - pc-98
   - graphics
   - bitplane
-  - bothtec
-engines: []
-games:
-  - ranma-half-hiryuu-densetsu
+platforms:
+  - PC-9801
+games: []
+formats: []
 maturity: documented
-samples:
-  - name: RANMA1.R1
-    size: 32000
-    md5_first_5k: "b355078e1ccd025e226b1bdd0c7cfc99"
-    sha256: "3920b77676030d399aecabb7fdc19ae0a13193c29a5590dcc4d96c8bc58a9769"
-  - name: RANMA.ALG
-    size: 96
-    md5_first_5k: "291d1d66eb7e0edfc0ede57b8add9713"
-    sha256: "e635828d72f2e4e721428740cf009afcf1af62aaae42469a51002c8ea8bc2244"
 sources: []
 last_verified: 2026-11-24
 ai_assisted: true
 ---
 
-# Bothtec PC-98 four-plane picture
+# Bothtec PC-98 pictures
 
-A picture is four separate files with the same base name and a one-letter extension, one 1-bit plane each, plus one shared palette file. There is no header: every plane is exactly 32,000 bytes of raw PC-98 GDC video memory for a 640 × 400 screen, 80 bytes per row.
+The engine's simplest picture format is four files with the same base name and a one-letter extension, one 1-bit plane each, plus a shared palette file. There is no header: every plane is exactly 32,000 bytes of raw PC-98 GDC video memory for a 640 × 400 screen, 80 bytes per row.
 
-The developer README shipped on disk 8 of *Ranma ½: Hiryuu Densetsu* describes this set itself: `akane1.?1`, `ranma1.?1` and `tsubasa1.?1` are pictures that were not used in the game, `view.com` displays them, and `ranma.alg` is loaded as *analog palette data*.
+The developer README on disk 8 of the inspected copy describes this set itself: `akane1.?1`, `ranma1.?1` and `tsubasa1.?1` are pictures that were not used in the game, `view.com` displays them, and `ranma.alg` is loaded as *analog palette data*.
 
 ## At a glance
 
 | Field | Value |
 | --- | --- |
 | Extension | `.R1` with siblings `.G1`, `.E1`, `.B1`; palette `.ALG` |
-| Used by | [*Ranma ½: Hiryuu Densetsu*](../games/ranma-half-hiryuu-densetsu.md) (PC-9801) |
-| Sample | `RANMA1.R1` 32,000 bytes on disk 8 of the inspected copy |
+| Used by | [Bothtec PC-98 engine](../bothtec-pc98.md) — *Ranma ½: Hiryuu Densetsu*, PC-9801 |
+| Sample | `RANMA1.R1`, 32,000 bytes, disk 8 of the inspected copy |
 | Dimensions | 640 × 400, fixed by the 80-byte row and the 32,000-byte plane length |
 | Compression | none observed |
 | Maturity | documented |
@@ -47,7 +39,7 @@ The developer README shipped on disk 8 of *Ranma ½: Hiryuu Densetsu* describes 
 
 ## Layout
 
-Each of the four files is a full-screen monochrome plane in GDC order: rows top to bottom, 80 bytes per row, bit 7 of the first byte is the leftmost pixel. The four planes are combined per pixel into a 4-bit colour index.
+Each of the four files is a full-screen monochrome plane in GDC order: rows top to bottom, 80 bytes per row, bit 7 of the first byte is the leftmost pixel. The four planes combine per pixel into a 4-bit colour index.
 
 | File | Plane | Bit in index |
 | --- | --- | ---: |
@@ -56,11 +48,11 @@ Each of the four files is a full-screen monochrome plane in GDC order: rows top 
 | `NAME.G1` | green | 2 |
 | `NAME.E1` | intensity | 3 |
 
-Bit order is the part that has to be got right: the common PC-98 convention is B/R/G/E from bit 0, and with that order the sample decodes to a recognisable picture. Any other assignment produces a wrong-coloured image rather than garbage, so it is worth checking against `VIEW.COM` output.
+Bit order is the part that has to be right: the usual PC-98 convention is B/R/G/E from bit 0, and with that order the sample decodes to a recognisable picture. A wrong assignment produces a wrong-coloured image rather than obvious garbage, so a new title's set is worth checking against `VIEW.COM` output.
 
 ## Palette
 
-`RANMA.ALG` is 96 bytes: 16 colours, three little-endian `u16` values each, in red, green, blue order. The channel value is the **low byte** of each word; the first entry is `00 00 00 00 d1 00`, i.e. red 0, green 209, blue 0. The high byte is not always zero — the red word of colour 9 at `0x36` is `4b 01`, giving 75 — so read the low byte only rather than shifting the word.
+`RANMA.ALG` is 96 bytes: 16 colours, three little-endian `u16` values each, in red, green, blue order. The channel value is the **low byte** of each word; the first entry is `00 00 00 00 d1 00`, i.e. red 0, green 209, blue 0. The high byte is not always zero — the red word of colour 9 at `0x36` is `4b 01`, giving 75 — so read the low byte rather than shifting the word.
 
 | Offset | Contents |
 | --- | --- |
@@ -68,7 +60,7 @@ Bit order is the part that has to be got right: the common PC-98 convention is B
 | … | one 6-byte entry per colour |
 | `0x5a` | colour 15 |
 
-One palette file is shared by every picture set on the disk: the README says `view.com` always loads `ranma.alg`, and the three sample sets contain no palette of their own. Colours can therefore look off for a picture the palette was not tuned for — `AKANE1` renders with green-tinted skin.
+One palette file serves every picture set on the disk: the README says `view.com` always loads `ranma.alg`, and the three sample sets contain no palette of their own. A picture the palette was not tuned for renders off — `AKANE1` comes out with green-tinted skin.
 
 ## Detection
 
@@ -77,11 +69,11 @@ One palette file is shared by every picture set on the disk: the README says `vi
 | `RANMA1.R1` | 32000 | `b355078e1ccd025e226b1bdd0c7cfc99` | `3920b77676030d399aecabb7fdc19ae0a13193c29a5590dcc4d96c8bc58a9769` |
 | `RANMA.ALG` | 96 | `291d1d66eb7e0edfc0ede57b8add9713` | `e635828d72f2e4e721428740cf009afcf1af62aaae42469a51002c8ea8bc2244` |
 
-`RANMA1.G1`, `RANMA1.E1` and `RANMA1.B1` are 32,000 bytes each as well. Sizes and both hashes were produced with `tools/sample-hashes.py` from the extracted disk 8 tree.
+`RANMA1.G1`, `RANMA1.E1` and `RANMA1.B1` are 32,000 bytes each as well. Sizes and both hashes came from `tools/sample-hashes.py` on the extracted disk 8 tree.
 
-## Extraction tooling
+## Converter
 
-The converter reads one plane, finds its three siblings and `RANMA.ALG` by name in the same folder, and writes a 24-bit BMP. `RANMA.ALG` must be named exactly that; the three picture sets on disk 8 all use it.
+The script reads one plane, finds its three siblings and `RANMA.ALG` by name in the same folder, and writes a 24-bit BMP. `RANMA.ALG` must be named exactly that; all three sets on disk 8 use it.
 
 ```text
 # bothtec-pc98-picture.bms — convert a Bothtec PC-98 four-plane picture to BMP
@@ -224,11 +216,11 @@ Limits: the width is fixed at 640 in the header, the palette file name is fixed 
 
 ## Unknowns
 
-- **The canvas holds two pictures.** Both halves of the rendered image look like separate 320 × 400 compositions. Whether the game displays one half at a time, and whether the plane origin differs from the headerless assumption, is not known.
+- **The canvas holds two pictures.** Both halves of the rendered image look like separate 320 × 400 compositions. Whether the game shows one half at a time, and whether the plane origin matches the headerless assumption, is not known.
 - **Relation to `.A98` and `.ANI`.** The rest of the game's pictures use those extensions with a small header. Their payloads were not verified to be the same planes, so no converter is offered for them yet.
-- **Palette scope.** Whether `.ALG` files other than `RANMA.ALG` exist in the game's own picture path, or the palette is fixed for the whole game, is not known.
-- **No public documentation found.** Searches for Bothtec picture formats, `.A98`, `.ANI` and `.ALG` returned no format description. The `.A98` hits that exist describe AliceSoft's unrelated A98SYS archive.
+- **Palette scope.** Whether the engine ever loads `.ALG` files other than `RANMA.ALG`, or the palette is fixed for the whole game, is not known.
+- **No public documentation found.** Searches for Bothtec picture formats, `.A98`, `.ANI` and `.ALG` returned no format description; the `.A98` hits that exist describe AliceSoft's unrelated A98SYS archive.
 
 ## Sources
 
-- No public source describes this format. The layout above was established from the inspected files and from `README.DOC` on disk 8 of the same copy, which documents the `.?1` naming, `view.com` and `ranma.alg` as analog palette data.
+No public source describes this format. The layout was established from the inspected files and from `README.DOC` on disk 8 of the same copy, which documents the `.?1` naming, `view.com` and `ranma.alg` as analog palette data.
