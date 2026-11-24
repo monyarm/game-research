@@ -76,6 +76,8 @@ The `0481` reading matches our copy: the bytes after it are a plain string. The 
 
 So either `I` is not a plain 32-bit offset, or this build's table differs from the Negapoji one. Until that is settled, opcode semantics stay **unverified** and nothing on this page depends on them.
 
+Crass's A98SYS module, written in 2009 against this era of the engine, still lists "decrypt the encrypted `.HGO` script" among the things it never finished. That points away from a pure version difference: part of the bytecode may be transformed before it reaches the table, which would also explain why printable text survives intact while instruction operands do not decode.
+
 ## Reading the text today
 
 No extractor is published here, because a parser written against an unverified opcode table would produce confident nonsense. What works is a printable-run scan over the HGO member: Shift-JIS dialogue is contiguous, zero-terminated and not compressed, so every line can be listed and indexed by file and offset without decoding a single instruction.
@@ -86,6 +88,7 @@ That is enough to read a scene and to build a translation table, and it is not e
 
 - **What the field at `0x1c` means.** It is 2 for scene functions and 1 for `$main`/`$dummy_func`; a parameter count and a flag are both plausible.
 - **How `04 80` encodes its target.** Six bytes appear at every function entry, and the four after the opcode are unexplained.
+- **Whether HGO bodies are transformed.** Crass's module calls the scripts "encrypted"; no transform has been found here, and the strings read as plain Shift-JIS. A byte-level comparison of the same function in two A98SYS titles would show whether a transform exists at all.
 - **Whether the opcode table is versioned.** `A98SYS Engine Ver.1.000701` is this build; Negapoji's build number is not known here.
 - **Where the `A98` variable namespace lives.** `@date` in `$main` uses an `@` prefix that does not appear in the published operand classes.
 
@@ -93,3 +96,4 @@ That is enough to read a scene and to build a translation table, and it is not e
 
 - [jyxjyx1234/misc_game-chs](https://github.com/jyxjyx1234/misc-game-chs) — `HGO_FILE.py` (container and dispatch), `opdict.py` (opcode table), `dump.py` (text extraction). No licence is stated in the repository.
 - [RikuKH3/bblack_transkit](https://github.com/RikuKH3/bblack_transkit) — `bblack_hgotext.dpr`, a text injector for this engine driven by a `.tbl` of strings. No licence is stated in the repository.
+- [Crass 0.4.14.1 — `A98SYS ENGINE` module](https://github.com/shangjiaxuan/Crass-source/blob/master/crass-0.4.14.1/cui/A98SYS%20ENGINE/A98SYS%20ENGINE.cpp) — lists HGO decryption as unfinished; module version 0.8.0, 2009-06-06, alpha.

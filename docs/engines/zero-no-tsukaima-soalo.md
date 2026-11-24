@@ -230,6 +230,8 @@ There is no reimplementation of this engine, and none is described here. The onl
 
 Running the games is out of scope for now: the games have not been played through for this notebook, so no compatibility claim is made. What has been inspected is the installed data — the executables and the data containers — not gameplay.
 
+**Loader work.** [NovelVM issue #48](https://github.com/monyarm/NovelVM/issues/48) tracks a reimplementation for this engine.
+
 ## Known use
 
 The engine is documented here from these three titles. No game page exists yet for any of them. Twenty-one other games are listed under [Games likely to use the engine](#games-likely-to-use-the-engine) — two inspected and counted as the same engine, one that turned out to be a different platform, and the rest on credits or publisher-era grounds.
@@ -248,6 +250,7 @@ The engine is documented here from these three titles. No game page exists yet f
 ## Sources
 
 - [VNDB — Zero no Tsukaima: Koakuma to Harukaze no Concerto](https://vndb.org/v104)
+- [monyarm/NovelVM — issue #48](https://github.com/monyarm/NovelVM/issues/48) — loader work for this engine.
 - [VNDB — Zero no Tsukaima: Muma ga Tsumugu Yokaze no Fantasy](https://vndb.org/v216)
 - [VNDB — Zero no Tsukaima: Maigo no Period to Ikusen no Symphony](https://vndb.org/v1275)
 - [有限会社ソシオ・アートロジック](https://artlogic.jp/) — company site; the work list credits Concerto to it as "main programmer, adventure library development excluding script control"

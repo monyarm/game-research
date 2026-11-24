@@ -91,6 +91,7 @@ The game has no reimplementation here, and none is planned. What exists is enoug
 - **Textures.** [Textures](tb-d3p/textures.md) describes the `.TPL` layout in full; the palette is ordinary RGBA8, so a small conversion step produces viewable images.
 - **Script.** [Script](tb-d3p/script.md) documents the bytecode tags, the record layout and the voice-id convention that maps each line to an `.at3` file.
 - **Events.** [Event scripts](tb-d3p/events.md) covers the choice tables, which hold the branching answers but not the prose.
+- **Loader work.** [NovelVM issue #89](https://github.com/monyarm/NovelVM/issues/89) tracks a reimplementation for this engine.
 
 Emulation remains the only way to run the game: it boots under PPSSPP from either the disc image or an extracted tree, and nothing here changes that. For reading the content the order is: split a container, split a `.TPL` if the file holds textures, then read the dialogue straight out of `PHASE/BIN/EVnnDATA.BIN`, which needs no decoder.
 
@@ -113,3 +114,4 @@ No other title is claimed. The engine carries no public name and no studio banne
 ## Sources
 
 - [VNDB — Tiger & Bunny: Hero's Day](https://vndb.org/v7899) — release data and platform list.
+- [monyarm/NovelVM — issue #89](https://github.com/monyarm/NovelVM/issues/89) — loader work for this engine.

@@ -71,6 +71,8 @@ PPSSPP boots the game from a disc image, and also from an extracted tree of the 
 
 Emulation is not a preservation answer on its own regardless — the game runs, but its text stays unreadable to anyone who is not playing it.
 
+**Loader work.** [NovelVM issue #90](https://github.com/monyarm/NovelVM/issues/90) tracks a reimplementation for this engine.
+
 ## Known use
 
 | Game | Platform | Released | Notes |
@@ -91,3 +93,4 @@ The developer credited by VNDB is CRAFTS & MEISTER. No game page exists yet for 
 ## Sources
 
 - [VNDB — Code Geass ~Hangyaku no Lelouch~ Lost Colors](https://vndb.org/v1502) — release date, platforms, credited developer.
+- [monyarm/NovelVM — issue #90](https://github.com/monyarm/NovelVM/issues/90) — loader work for this engine.

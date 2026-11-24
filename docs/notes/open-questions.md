@@ -54,6 +54,20 @@ Nothing here is a plan. A row closes when a check produces evidence, and then th
 | How `.ks` slot names relate to `SCENE_ID` record numbers | The two name sets coincide: 596 of the 600 Symphony records share a stem with a `.ks` name in `SYSTEM`, and the four that do not are staff or check scenes. But the names live in `SYSTEM` record 33 (`DataMake/SCENE/scenes.nut`) as 600 bare strings with no index beside them, in a different order from the container, and Concerto's source names no scene at all — only numbers. | The build toolchain, or a runtime trace of a scene load. |
 | The words in the constant `SOUND_ID` header record | A 20-byte record of five `u32` values — `0`, a value near 44000–44131, `0` or `1`, `0x1000`, and `0` or `0xffffffff` — and record 1 is the same on all three discs. The records beside it are PS2 SPU2 ADPCM banks. The reader was not found: the string reference only reaches the audio system's archive registration, and no function reads a 20-byte stride anywhere in the executable. | Finding the routine that consumes the descriptor — the boot code preloads `SOUND_ID` records 1, 114 and 115, so the consumer runs on the audio thread rather than at archive open. |
 
+## A98SYS
+
+*Bible Black* and the other Active titles, Windows. The archive layout, both index variants, the script function table and the image headers are measured; what is open is what the script bodies mean.
+
+| Open | What is known | What would close it |
+| --- | --- | --- |
+| HGO opcode semantics | `0x0481` behaves as a text opcode with a zero-terminated Shift-JIS string. `0x0480` does not: every function begins `04 80` followed by values that are not offsets into the file under either byte order, against a published table that calls it a jump. | Walking one function byte by byte with a reader of our own, comparing the same function across two titles. |
+| Whether HGO bodies are transformed | Text survives as readable Shift-JIS while the operands do not decode, and the 2009 Crass module still lists "decrypt the encrypted HGO script" as unfinished. A transform rather than a version difference would explain both. | The same function's bytes from two releases side by side, or the loader's read of the body. |
+| What the voice archive key means | The index is `u32` key plus absolute offset per member, and every member is a numbered `.WAV`. How the script names a line is not known. | The call site in an HGO body that reaches the voice archive. |
+| The image decompression | The 34-byte `EDT` and 26-byte `.8Bit` headers are measured and reconcile exactly. The pixel coder is described by Crass and GARbro but was not re-derived here. | Re-implementing one decoder against `ACTIVE.EDT` and `ARF_.ED8` and comparing pixel output. |
+| Which `.8Bit` types exist | Only type `256` is handled by the public decoders, and every inspected member uses it. Other values are unhandled. | A member with another type value. |
+| What `TS_BANK.ITW` is | 2,576 bytes opening with a run of increasing offsets, unique in the archive. | A second `.ITW` member, or the routine that reads it. |
+| Whether the Haoh cluster belongs to A98SYS | Crass lists thirteen 覇王 titles under this engine; VNDB does not tag them. | One Haoh executable's strings and archive names. |
+
 ## Flash runtime
 
 *Scooby-Doo! Case File #3*, Windows. The SWF set and its Ruffle behaviour are documented; the gaps are playtest records rather than format questions.

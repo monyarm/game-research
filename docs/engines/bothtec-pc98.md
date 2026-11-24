@@ -46,7 +46,7 @@ Bothtec's own adventure system for the PC-9801: plain real-mode DOS executables,
 
 ## Why it matters
 
-The PC-98 adventure library is large and mostly undocumented, and this engine is a gap in the published lists: the usual PC-98 engine surveys skip Bothtec entirely, and the `.A98` extension is documented only for AliceSoft's unrelated archive. A game that keeps its data in loose, individually named files is also unusually readable — 456 animation files, 47 pictures and 60 songs are each addressable without an archive layer, so the only real work is per-format layout rather than container cracking.
+The PC-98 adventure library is large and mostly undocumented, and this engine is a gap in the published lists: the usual PC-98 engine surveys skip Bothtec entirely, and `.A98` is documented elsewhere only for an unrelated archive format that happens to share the extension. A game that keeps its data in loose, individually named files is also unusually readable — 456 animation files, 47 pictures and 60 songs are each addressable without an archive layer, so the only real work is per-format layout rather than container cracking.
 
 It also has a self-documenting corner. Disk 8 of the inspected copy holds three pictures that were cut from the game, `VIEW.COM` to display them, and `README.DOC` explaining the naming and the palette. Bothtec shipped that deliberately, which gives a first-party reference for the picture format and a model for what the rest of the data probably looks like.
 
@@ -70,6 +70,7 @@ It also has a self-documenting corner. Disk 8 of the inspected copy holds three 
 - Mount the eight `.d88` images in a PC-98 emulator; the set is ordered and requests each disk in turn.
 - To see the picture format without the game, boot MS-DOS on the extras disk, keep `RANMA.ALG` in the current directory and run `view RANMA1`. `VIEW.COM` is a first-party decoder, so anything else that reads the format can be checked against it.
 - The [picture converter](bothtec-pc98/textures.md) writes BMPs from the disk 8 sets without an emulator.
+- **Loader work.** [NovelVM issue #58](https://github.com/monyarm/NovelVM/issues/58) tracks a reimplementation for this engine.
 
 ## Known use
 
@@ -90,5 +91,6 @@ No dedicated game page exists for either title; the engine page carries the find
 ## Sources
 
 - [MAME `msxr_flop` software list](https://github.com/mamedev/mame/blob/master/hash/msxr_flop.xml) — the MSX turboR release, its publisher and disk set.
+- [monyarm/NovelVM — issue #58](https://github.com/monyarm/NovelVM/issues/58) — loader work for this engine.
 - [Hoot driver notes for Bothtec](https://kurohane.net/hoot/txt/bothtec.txt) — sound driver cut offsets for the MSX release.
 - [TCRF: Ranma ½ Hiryuu Densetsu (MSX turboR)](https://tcrf.net/Ranma_%C2%BD:_Hiryuu_Densetsu_(MSX_turbo-R)) — the extras on the MSX disks, its Graph Saurus pictures and `.RCP` music.
