@@ -60,6 +60,9 @@ nav:
           - Overview: engines/bothtec-pc98.md
           - Payload: engines/bothtec-pc98/payload.md
           - Pictures: engines/bothtec-pc98/textures.md
+      - "AliceSoft System 3.x":
+          - Overview: engines/alicesoft-system3-x.md
+          - Forks and patches: engines/alicesoft-system3-x/forks.md
       - "A98SYS (Active engine)":
           - Overview: engines/a98sys.md
           - Archives: engines/a98sys/archives.md

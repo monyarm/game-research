@@ -23,6 +23,7 @@ A single place for my research on adventure and visual novel games: the engines 
 | [CLS engine](engines/cls.md) | Adventure engine (in-house PSP/PS2 framework) | *Code Geass: Lost Colors* | `OOCH` scene containers (decoded), glyph-indexed dialogue in `ScStr`, CRI ADX audio. |
 | [TB_D3P engine](engines/tb-d3p.md) | Visual novel engine (in-house) | *Tiger & Bunny — Hero's Day* | Section containers, paletted `.TPL` textures, Shift-JIS dialogue in a tagged bytecode; event opcodes partly decoded. |
 | [A98SYS (Active engine)](engines/a98sys.md) | Visual novel engine (in-house, Windows) | *Bible Black* and about 20 more Active titles | Flat PAK archives with a 16-byte index, HGO bytecode, `.TRUE`/`.8Bit` images; voice archives still unread. |
+| [AliceSoft System 3.x](engines/alicesoft-system3-x.md) | Visual novel engine (in-house, Windows) | Around 100 releases, including *Kichikuou Rance*, *Daiakuji*, *Tsumamigui 2* | Compiled bytecode with a per-title `.ain` module manifest; two open GPL runtimes, plus a handful of patches worth lifting. |
 | [Bothtec PC-98 adventure engine (working title)](engines/bothtec-pc98.md) | Adventure engine (in-house) | *Ranma ½: Hiryuu Densetsu* (PC-9801, MSX turboR) | Loose files on eight floppies, plain DOS executables; headerless four-plane pictures decoded, `.A98`/`.ANI` containers partly mapped. |
 
 ## Games
