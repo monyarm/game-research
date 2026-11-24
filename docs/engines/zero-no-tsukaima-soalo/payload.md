@@ -29,7 +29,7 @@ The builds are named by their subtitles: **Concerto** (*Koakuma to Harukaze no C
 
 | Container | Purpose | Present in |
 | --- | --- | --- |
-| `SYSTEM` | Script library: `.nut` source, compiled data, scene-script name tables, dialogue text | Fantasy and Symphony |
+| `SYSTEM` | Script library: `.nut` source pages, then the compiled closure units of the same modules | Fantasy and Symphony |
 | `SCENEDAT` | Scene backgrounds | All three |
 | `SCENE_ID` | Per-scene compressed blocks: compiled scene data on Fantasy and Symphony, script source on Concerto | All three |
 | `NORMAL` | UI and shared textures | All three |
@@ -68,15 +68,18 @@ The index sums never reach the `.BIN` size. Symphony `SYSTEM` sums to 884,706 of
 
 ## `SYSTEM`: the script library
 
-`SYSTEM` is the readable container. On Symphony it is 42 records; the first 33 are a **paged text stream** in Shift-JIS, cut mid-token at record boundaries, and each page begins with a run of `0xFF` padding. The record boundaries carry no structural meaning for the text; they exist because the container works in pages.
+`SYSTEM` is the readable container. On Symphony it is 42 records; records 0–31 are a **paged text stream** in Shift-JIS, cut mid-token at record boundaries, and each page begins with a run of `0xFF` padding. The record boundaries carry no structural meaning for the text; they exist because the container works in pages. Record 10 is zero-length.
 
 | Records | Content | Evidence |
 | --- | --- | --- |
-| 0–32 | `.nut` script source, Japanese comments, `class` / `function` / `dofile` | Printable ratio 0.64–0.99 |
-| 33–39 | Binary tables: counts, string lists, scene-script names | Printable ratio 0.20–0.59 |
-| 40–41 | Dialogue text: speaker, voice id, line, narrator gloss | 8,888 and 879 bytes, tagged strings |
+| 0–31 | `.nut` script source, Japanese comments, `class` / `function` / `dofile` | Printable ratio 0.64–0.99 |
+| 32–41 | Ten compiled Squirrel closure units, each opening `FA FA 52 49 51 53 01` | Every record begins with the closure head and the `TRAP` slot label |
 
-Fantasy has the same shape with one page fewer: records 0–31 are text (ratio 0.54–0.96), then 32–36 are the binary tail (ratios 0.25, 0.04, 0.05, 0.23, 0.18).
+Fantasy has the same shape with one page fewer: records 0–30 are source (ratio 0.54–0.96) and 31–36 are six compiled closure units.
+
+The compiled units are not a separate kind of record from the source — they are the same modules after the Squirrel compiler ran. Each one opens `FA FA`, Squirrel's closure-stream head, then the four characters `R I Q S` (Squirrel's `SQIR` tag written backwards), then a version byte `01`, the slot label `TRAP`, and a length-prefixed build path. Sizes on Symphony, records 32–41: 34,440 · 40,233 · 1,942 · 10,273 · 337,910 · 72,693 · 29,421 · 8,656 · 8,888 · 879 bytes. On Fantasy, records 31–36: 39,151 · 51,982 · 2,220 · 7,711 · 229,886 · 1,489 bytes.
+
+Because the units are compiled, the module identity sits in the stream itself as a `TRAP` slot label and a build path rather than in a name table of its own.
 
 Concatenating Symphony's text pages and dropping the `0xFF` runs gives 340,446 bytes of source with **65 `class` and 972 `function` declarations** across **36 `dofile` modules**:
 
@@ -195,5 +198,5 @@ Record sizes are whole numbers of 16-byte frames. This is why voice ids from the
 - The `SCENE_ID` grammar: the block stream is understood, but what the compiled payload describes (scene, layer, or action) is not decoded.
 - Whether the `SCENE_ID` tag word selects a decoder path or only records the content kind.
 - Whether `SCENE_ID` block boundaries line up with any per-scene numbering, and how the `.ks` scene names in `SYSTEM` map onto them.
-- `SYSTEM`'s binary tail on Fantasy and Symphony: rec 36 on Symphony is a 337,910-byte count table, and the following records are unmapped.
+- What the compiled closure units in `SYSTEM` contain: their slot labels (`TRAP`, one per module) and build paths are readable, but the module bodies are compiled Squirrel and have not been walked.
 - What the constant `SOUND_ID` header record contains; one 20-byte record is all there is, and its five words are unread beyond being fixed.
