@@ -47,15 +47,12 @@ Nothing here is a plan. A row closes when a check produces evidence, and then th
 
 ## Soalo
 
-*Zero no Tsukaima* on PS2, with *Kazeiro Surf* and *GA Geijutsuka* sharing the library. The packaging, the record pairs, the textures and the Squirrel binding are documented.
+*Zero no Tsukaima* on PS2, with *Kazeiro Surf* and *GA Geijutsuka* sharing the library. The packaging, the record pairs, the textures, the Squirrel binding and the scene statement grammar are documented.
 
 | Open | What is known | What would close it |
 | --- | --- | --- |
 | How `.ks` slot names relate to `SCENE_ID` record numbers | The two name sets coincide: 596 of the 600 Symphony records share a stem with a `.ks` name in `SYSTEM`, and the four that do not are staff or check scenes. But the names live in `SYSTEM` record 33 (`DataMake/SCENE/scenes.nut`) as 600 bare strings with no index beside them, in a different order from the container, and Concerto's source names no scene at all — only numbers. | The build toolchain, or a runtime trace of a scene load. |
-| The `.ks` grammar | Only the name table is visible; the dialect is described nowhere in the data, and the scene modules that survive are Squirrel source or compiled Squirrel. | A script that survives round-tripping, or the Squirrel side that reads it. |
-| What the compiled scene and library modules contain | Every `SCENE_ID` record and the `SYSTEM` closure units are stock Squirrel closure streams opening `FA FA 52 49 51 53 01`, each with a `TRAP` slot label and one length-prefixed build path. The bodies are compiled. | Walking the closure stream, or dumping a loaded module from a running copy. |
-| The words in the constant `SOUND_ID` header record | Record 0 is empty and record 1 is the same 20 bytes on all three discs: `00000000 12ac0000 01000000 00100000 00000000`. | Reading them against the audio banks they precede. |
-| Who wrote the script control layer | Socio Art Logic credits Concerto as "adventure library development excluding script control", and the Squirrel binding is the most distinctive part of the engine. | Credits research on the trilogy. |
+| The words in the constant `SOUND_ID` header record | A 20-byte record of five `u32` values — `0`, a value near 44000–44131, `0` or `1`, `0x1000`, and `0` or `0xffffffff` — and record 1 is the same on all three discs. The records beside it are PS2 SPU2 ADPCM banks. The reader was not found: the string reference only reaches the audio system's archive registration, and no function reads a 20-byte stride anywhere in the executable. | Finding the routine that consumes the descriptor — the boot code preloads `SOUND_ID` records 1, 114 and 115, so the consumer runs on the audio thread rather than at archive open. |
 
 ## Flash runtime
 

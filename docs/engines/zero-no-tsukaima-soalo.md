@@ -221,6 +221,7 @@ Each pair is explained in detail on the subpages:
 - [Payload layout](zero-no-tsukaima-soalo/payload.md) — record maps for every container in all three games.
 - [Archives](zero-no-tsukaima-soalo/archives.md) — the `.BIN`/`.HD` pair and a quickbms splitter.
 - [Scripts](zero-no-tsukaima-soalo/scripts.md) — the `.nut` module layer, the `.ks` scene layer, and a quickbms extractor.
+- [Scene command lists](zero-no-tsukaima-soalo/commands.md) — the compiled scene closure, its nine opcodes, the statement grammar, and a quickbms script that writes every scene out as text.
 - [Textures](zero-no-tsukaima-soalo/textures.md) — the compressed TIM2 blocks, the codec, and the tool that decodes them.
 
 ## Running it today

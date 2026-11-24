@@ -42,6 +42,7 @@ nav:
           - Payload layout: engines/zero-no-tsukaima-soalo/payload.md
           - Archives: engines/zero-no-tsukaima-soalo/archives.md
           - Scripts: engines/zero-no-tsukaima-soalo/scripts.md
+          - Scene command lists: engines/zero-no-tsukaima-soalo/commands.md
           - Textures: engines/zero-no-tsukaima-soalo/textures.md
       - "CLS engine":
           - Overview: engines/cls.md

@@ -304,7 +304,7 @@ iconv -f CP932 -t UTF-8 scripts_dump.nut > scripts_dump.utf8.nut
 
 ## Unknowns
 
-- The `.ks` grammar. Only the name table is visible; the dialect itself is described nowhere in the data.
+- The meaning of individual actor-state flags (`[ルイズ 出 水着 …]`). The grammar and the whole command vocabulary are on the [scene command lists](commands.md) page; what each flag does lives in the shipped Squirrel classes, not in the bytecode.
 - Whether `TRAP`/`TRAPY` are literally trap events or unrelated branch labels.
 - The table that turns a `.ks` name into a `SCENE_ID` record number. The names match, but scripts address records numerically, so a lookup exists and has not been read.
 - Whether Symphony compiles `.nut` at runtime or only deserialises packed units; the retained serializer and `dofile` strings support either reading.
