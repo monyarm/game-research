@@ -1,12 +1,11 @@
 {
+  "$schema": "https://opencode.ai/config.json",
   "mcp": {
     "rea": {
       "type": "local",
-      "command": [
-        "/home/monyarm/Documents/Github/game-research/.gc-roots/nodejs-22.23.4/bin/node",
-        "/home/monyarm/.local/share/rea/node_modules/.bin/rea",
-        "mcp"
-      ],
+      // Repo-local only: the wrapper pins node, the JDK and the Ghidra PSP tree.
+      "command": ["tools/rea-mcp.sh"],
+      "cwd": "./",
       "enabled": true
     }
   }

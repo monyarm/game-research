@@ -10,8 +10,13 @@ site/
 # Local scratch space
 work/
 
-# Nix gc roots (machine-specific symlinks into /nix/store)
+# Nix gc roots (machine-specific symlinks into /nix/store) and the writable
+# Ghidra install mirror they feed
 .gc-roots/
+.ghidra-psp/
+
+# Node dependencies for the repo-local REA MCP server
+node_modules/
 
 # Editors and OS files
 .idea/
