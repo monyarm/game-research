@@ -200,7 +200,7 @@ The LZSS sweep came within one parameter of the answer. It covered both field wi
 ## What is still open
 
 1. **Multiple streams.** The header allows one flag entry and a pair of parameters per stream, and the disc only ever uses one. Two or more streams are unexercised, so their order and interleaving are unknown.
-2. **The DMA path.** The loader has a second decoder class selected by a mode field, used with a separate DMA buffer. Every file here takes the normal path, so the alternative is unread until a file selects it.
+2. **The DMA path.** The loader has a second decoder class, reached when a field at offset `0xa4` of the streaming reader equals 3, backed by a separately allocated DMA buffer instead of the plain one. That field belongs to the reader object rather than to the file header, and no inspected file takes the branch, so nothing here can say what its token grammar looks like.
 
 ## Sources
 
