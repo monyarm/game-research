@@ -34,6 +34,12 @@ A single place for my research on adventure and visual novel games: the engines 
 | [*Tiger & Bunny — Hero's Day*](games/tiger-and-bunny-heros-day.md) | [TB_D3P](engines/tb-d3p.md) | D3Publisher; PSP `NPJH50753` (inspected); 2013-03-20. |
 | *Scooby-Doo! Case File #3: Frights! Camera! Mystery!* | [Scooby-Doo! Case File #3: Flash runtime](engines/scooby-doo-case-file-3-flash.md) | The Learning Company; Windows 2000/XP; 2007 CD-ROM; disc required. |
 
+## Notes
+
+| Note | Covers |
+| --- | --- |
+| [Open questions](notes/open-questions.md) | What is still not established on each engine page, and what evidence would close it. |
+
 ## How to read these notes
 
 - **Observed** — checked directly against a file, binary, disc, or reproducible test.

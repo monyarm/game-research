@@ -57,6 +57,8 @@ nav:
           - Textures: engines/tb-d3p/textures.md
   - Games:
       - "Tiger & Bunny — Hero's Day": games/tiger-and-bunny-heros-day.md
+  - Notes:
+      - Open questions: notes/open-questions.md
 
 plugins:
   - search
