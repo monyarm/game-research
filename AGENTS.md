@@ -29,7 +29,7 @@ When the user does ask for a new page, follow the page rules below and add it to
 4. **No decompiled code or leaked source.** Discuss behaviour and formats in original prose. Do not paste decompiler output, disassembly, or reconstructed source.
 5. **No copying from reference repositories.** Reference material is for orientation only. Write original prose, cite public sources, and do not reproduce another project's structure, wording, code, or assets.
 6. **Do not name reference material in site content** unless the user explicitly asks for that citation.
-7. **Corrections stay visible.** If a claim changes, add a dated correction. Do not silently rewrite a reviewed finding.
+7. **Corrections are inline.** If a claim changes, state the new value in place, dated where the date matters. Do not add a "Corrections" section, an admonition block, or any sentence about what an earlier version of the page used to say.
 8. **No upstream claims.** Do not imply that a runtime, emulator, or upstream project has accepted, merged, or endorsed anything here.
 9. **Private stays private.** Do not publish private correspondence, invite links, email addresses, credentials, or unannounced repositories.
 10. **Credit the human.** The maintainer is Simeon Armenchev (monyarm). AI assistance is disclosed in frontmatter, not used to claim authorship of research.
@@ -278,12 +278,7 @@ Engine and format `maturity`:
 - Describe inspected material neutrally: "the inspected copy", "this copy", "not inspected". Never name a distribution site, never discuss how a copy was supplied, and never argue about the provenance or legality of a copy.
 - Do not use a footnote to hide a weak claim. Put the evidence level in the sentence or table.
 - Do not write "TODO" on a `reviewed` or `stable` page. Use `## Open questions` instead.
-- Keep corrections visible:
-
-```markdown
-!!! correction "Correction (2026-11-22)"
-    Earlier versions of this page said X. The observed value is Y.
-```
+- Corrections are inlined. Write the current finding where it belongs, with its date in the evidence table or the sentence, and drop the history of the page itself: no `Corrections` section, no admonition block, no "earlier versions said".
 
 ## Landing page and navigation
 

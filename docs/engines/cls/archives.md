@@ -35,15 +35,15 @@ Every `OOCH` file carries a fixed `0x800`-byte header before its payload, and `p
 | `0x00` | `OOCH` | magic |
 | `0x04` | `0x08000001` | version |
 | `0x08` | payload size | equals file size − `0x800` |
-| `0x0c` | varies 3,344–4,431,392 | decoded size, unconfirmed |
-| `0x10` | `18 00 1c 00` | two `u16`, 24 and 28 |
-| `0x14` | 1 | |
-| `0x18` | 0 | |
-| `0x1c` | 32 | |
-| `0x20` | 8 | |
-| `0x24` | 8 | |
+| `0x0c` | varies 3,344–4,431,392 | decoded size |
+| `0x10` | `18 00 1c 00` | two `u16`, 24 and 28: offset of the per-stream flag array and of the codec parameters |
+| `0x14` | 1 | number of codec streams |
+| `0x18` | 0 | flags entry for the single stream |
+| `0x1c` | 32 | codec parameter word |
+| `0x20` | 8 | codec parameter word |
+| `0x24` | 8 | codec parameter word |
 
-The client-side reading is that `0x0c` is the decompressed size, because the ratio against the payload runs from 1.2 to 90 with a median of 7.5 — a plausible range for text and graphics mixed into one stream. The payload itself starts at `0x800` and is the subject of [Decoding the scene containers](decoding.md).
+The payload starts at `0x800` and is an LZSS bit stream that expands to a `pack` container; the grammar and a working extractor are on [Decoding the scene containers](decoding.md).
 
 ## pack: image and font bundles
 
@@ -81,7 +81,7 @@ So `ScStr` is the per-scene font resource, not the script. A Shift-JIS scan of t
 
 ## What is still open
 
-`OOCH` is the only family that has not been decoded, and it is the one that matters: 1,454 files of scene content. Everything else on this page is packaging around it.
+All five families are decoded at the container level. What is left is inside them: the text and the state machine in each of the 1,454 decoded scene containers, and which of the `pack` sub-blocks belong to a scene rather than to a font or a background.
 
 ## Sources
 

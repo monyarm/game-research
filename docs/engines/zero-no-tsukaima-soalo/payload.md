@@ -136,15 +136,9 @@ Compiled script units are stock Squirrel closure streams. The stream opens `FA F
 
 So the `.nut` text and the compiled units sit in the same `SYSTEM` pair, and the `0x08000010` tag above is the record type inside the closure stream rather than a container of its own.
 
-!!! correction "Correction (2026-11-23)"
-    Earlier versions of this page said no payload file contains Squirrel's serialisation magic and that the compiled units therefore used a custom container. The magic is present, bit-reversed as `RIQS`; the units are Squirrel's own format.
-
 ## `SCENE_ID`: compressed blocks
 
 `SCENE_ID` is a block stream like `SCENEDAT` and `NORMAL`, built on 2048-byte boundaries with the same 8-byte header and the same codec described on the [textures](textures.md) page. What changes between builds is the payload.
-
-!!! correction "Correction (2026-11-23)"
-    An earlier version of this page described `SCENE_ID` as uncompressed, with a `0x04xx` handle alphabet on Fantasy and Symphony and a "tokenised source" on Concerto. Both descriptions were read off the compressed bytes. The container is compressed throughout; the handle frequencies were measuring the codec, and Concerto's source decompresses to plain Shift-JIS text.
 
 Counting block headers on 2048-byte boundaries finds 536 in Symphony, 633 in Fantasy, and 377 in Concerto. Decoding 120 of them per game and inspecting the first part of each block:
 

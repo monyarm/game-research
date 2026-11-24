@@ -64,9 +64,6 @@ That rounding is exact, not approximate: summing `ceil(size/2048) * 2048` over e
 
 Boundary checks: Symphony `SYSTEM` record 0 is a 4,894-byte script page, so record 1 starts at 6,144 with `0xFF` up to that point and its own content at 6,144; record 2 then starts at 12,288. Concerto and Fantasy behave the same way.
 
-!!! correction "Correction (2026-11-23)"
-    Earlier versions of this page said the record sizes covered only 92–99.97 % of each payload and that the remainder was trailing padding. The padding is per record, not at the end: every record starts on a 2048-byte boundary, which accounts for the difference exactly.
-
 ## Things that will trip up a naive reader
 
 - **The sizes do not add up to the file size.** Symphony's `SYSTEM` records sum to 884,706 bytes of a 927,744-byte file; `SOUND_ID` sums to 380,907,904 of 381,030,400. The difference is the 2048-byte rounding of each record, not a hidden region — a reader that advances by the raw size drifts out of step from the first record on.

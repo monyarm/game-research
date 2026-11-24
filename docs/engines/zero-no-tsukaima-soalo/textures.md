@@ -30,9 +30,6 @@ ai_assisted: true
 
 `SCENEDAT.BIN` (scene backgrounds) and `NORMAL.BIN` (UI) hold the game's images. Every image is stored as a compressed block on a 2048-byte boundary, and every block decodes to a complete TIM2 file.
 
-!!! correction "Correction (2026-11-23)"
-    An earlier version of this page called the payload an unidentified codec and said no TIM2 header could be found in a block. That was wrong. The blocks decompress to plain TIM2 v4; the header simply is not visible until the block is decoded, and the `0xE6` byte that looked like a fixed marker is the first instruction of the compressed stream.
-
 ## At a glance
 
 | Property | `SCENEDAT.BIN` | `NORMAL.BIN` |

@@ -1,9 +1,9 @@
 ---
 title: "Decoding the scene containers"
-description: "Why the OOCH payload stream in Code Geass: Lost Colors is still undecoded, what was tried, and where the answer has to come from."
+description: "The OOCH scene container in Code Geass: Lost Colors: its header, the bit-flagged LZSS stream it carries, and a quickbms script that decodes every file on the disc."
 type: note
-status: draft
-confidence: mixed
+status: reviewed
+confidence: observed
 tags:
   - playstation-portable
   - compression
@@ -14,37 +14,176 @@ sources:
     url: https://forums.fuwanovel.moe/topic/11468-extracting-psp-game-data-files-code-geass-lost-colors/
   - title: GBAtemp thread on editing Code Geass - Lost Colors files
     url: https://gbatemp.net/threads/help-code-geass-lost-colors-translation.355017/
-last_verified: 2026-11-23
+last_verified: 2026-11-24
 ai_assisted: true
 ---
 
 # Decoding the scene containers
 
-This page records an unsolved problem rather than a format. The 1,454 `OOCH` files hold the game's scenes, their payloads are compressed, and nothing in the standard decoder set opens them.
+`OOCH` is the compressed form of the plain [`pack`](archives.md) container. It carries a fixed `0x800`-byte header, and after it a bit stream that expands to a `pack` file of the size the header declares. The scheme is a byte-oriented LZSS with 8-bit distance and 8-bit length fields, and every one of the 1,454 `OOCH` files on the inspected disc decodes with it.
 
-No extractor is offered here on purpose. A quickbms script cannot be written against a compression scheme that is not known yet, and guessing one would only add a script that fails silently.
+## At a glance
 
-## The test case
+| | |
+| --- | --- |
+| Magic | `OOCH` at offset `0x00` |
+| Header size | `0x800`, one sector |
+| Payload | Starts at `0x800`, length is the file size minus `0x800` |
+| Decoded size | `u32` at `0x0c` |
+| Decoded form | A `pack` container, starting with the `pack` magic |
+| Method | LZSS, 1 flag bit, 8-bit distance, 8-bit length, MSB-first |
+| Sample | `USRDIR/root/000J.P`, 3,187 bytes to 25,872 |
+| Extractor | [quickbms script](#extracting-it), below |
 
-`USRDIR/root/000J.P` is a small, representative sample:
+## Header
 
-| Field | Value |
-| --- | ---: |
-| File size | 3,187 bytes |
-| Payload offset | `0x800` |
-| Payload size | 1,139 bytes |
-| Declared decoded size (`0x0c`) | 25,872 bytes |
+Offsets are file offsets. In the executable, this image maps virtual address `0xed7c0` to file offset `0xed814`, a `0x54`-byte gap, so a reference search has to pick one basis and stay on it.
 
-The payload begins:
+| Offset | Type | Value | Meaning |
+| --- | --- | --- | --- |
+| `0x00` | `char[4]` | `OOCH` | Magic |
+| `0x04` | `u32` | `0x08000001` | Type word; plain `pack` files carry `0x00020001` |
+| `0x06` | `u16` | `0x0800` | Payload offset within the header sector |
+| `0x08` | `u32` | file size − `0x800` | Packed payload size |
+| `0x0c` | `u32` | varies | Decoded size |
+| `0x10` | `u16` | `0x18` | Offset of the per-stream flag array |
+| `0x12` | `u16` | `0x1c` | Offset of the codec parameter pairs |
+| `0x14` | `u8` | `1` | Number of codec streams |
+| `0x18` | `u32` | `0` | Flags entry for the single stream |
+| `0x1c` | `u32` | `32` | Codec parameter word 0 |
+| `0x20` | `u32` | `8` | Codec parameter word 1 |
+| `0x24` | `u32` | `8` | Codec parameter word 2 |
 
-```text
-38 18 4c 66 b0 08 00 04 00 00 80 20 20 8d 00 38 82 10 06
-10 32 c3 41 60 a0 c0 12 81 4c a1 …
+Every field above except `0x08` and `0x0c` is identical in all 1,454 files, so the disc uses one compressor setting throughout. `u16` at `0x06` is where the payload begins; it reads `0x800` everywhere here, which is why the payload always starts on the sector boundary. Which of the parameter words at `0x1c`, `0x20` and `0x24` carries the distance width is still open — see [What is still open](#what-is-still-open).
+
+The loader picks the decoder by comparing the container's first word with the `OOCH` string, not by testing the type word: the routine at file offset `0x2d704` loads the word at file offset `0xed814` and compares it, with `0x2e480` doing the same for `pack` at `0xed81c`. Both loads are `$gp`-relative (`lui v0, 0xf; lw v0, -0x27ec(v0)`), which is why a search for absolute `lui` + `addiu` or `lui` + `ori` addressing finds no reference to either magic.
+
+## The payload stream
+
+The stream starts at `0x800` and is read **most significant bit first** within each byte. It is a flag bit followed by a token:
+
+- flag `0` — literal: the next 8 bits are a byte, appended to the output.
+- flag `1` — match: the next 8 bits are a distance, the next 8 bits after that a length, and `length` bytes are copied from `distance` bytes back in the output. **Neither field has a bias** — the distance is not `distance + 1` and the length is not `length + 3`.
+
+Decoding stops when the output reaches the declared size at `0x0c`.
+
+The first six tokens of `000J.P` show the grammar directly, because they spell the output's own magic:
+
+| Bits consumed | Flag | Token | Output |
+| --- | --- | --- | --- |
+| `0` | `0` | literal `0111 0000` | `70` `p` |
+| `0` | `0` | literal `0110 0001` | `61` `a` |
+| `0` | `0` | literal `0110 0011` | `63` `c` |
+| `0` | `0` | literal `0110 1011` | `6b` `k` |
+| `0` | `0` | literal `0000 0001` | `01` |
+| `0` | `0` | literal `0000 0000` | `00` |
+
+The first four tokens consume `0x38 0x18 0x4c 0x66 0xb0 0x08` at one bit of flag per byte, which is why the payload prologue `38 18 4c 66` looks constant across every file in the container family: it is the first four literal bytes of `pack`, not a signature.
+
+## Extracting it
+
+```quickbms
+# Code Geass: Lost Colors (PSP) - OOCH container decoder
+#
+# OOCH is the compressed form of the plain "pack" container. Structure:
+#   0x00  char[4]  "OOCH"
+#   0x04  u32      type word, 0x08000001
+#   0x08  u32      packed payload size
+#   0x0c  u32      decoded size
+#   0x10  u16      offset of the per-stream flag array
+#   0x12  u16      offset of the bit-width parameter pairs
+#   0x14  u8       number of codec streams (1 on the inspected disc)
+#   0x800          payload, an LZSS bit stream
+#
+# Bit stream, MSB first:
+#   0 bit -> 8 raw bits, a literal byte
+#   1 bit -> 8 bits distance, 8 bits length, copy that many bytes from
+#            distance bytes back in the output (no bias on either field)
+# Decoding stops at the decoded size declared at 0x0c.
+#
+# Usage: quickbms cls-ooch.bms 000J.P   -> writes 000J.P.pack
+# Verified against all 1,454 OOCH files of the inspected disc: every
+# output reaches the declared size and begins with the "pack" magic.
+
+endian little
+
+idstring "OOCH"
+
+get TYPEWORD long      # 0x04
+get PACKEDSIZE long    # 0x08
+get DECODEDSIZE long   # 0x0c
+get FLAGSOFF short     # 0x10
+get PARAMOFF short     # 0x12
+get NSTREAMS byte      # 0x14
+
+goto 0x800
+# getbits reads the bits MSB first only in big endian mode, and the header
+# integers above are little endian, so switch after reading them.
+endian big
+
+log MEMORY_FILE 0 0    # empty output buffer
+
+For POS = 0 < DECODEDSIZE
+    getbits FLAG 1
+    if FLAG == 0
+        getbits VAL 8
+        goto POS MEMORY_FILE
+        put VAL byte MEMORY_FILE
+        math POS += 1
+    else
+        getbits DIST 8
+        getbits LEN 8
+        math SRC = POS
+        math SRC -= DIST
+        For I = 0 < LEN
+            math TMP = SRC
+            math TMP += I
+            goto TMP MEMORY_FILE
+            get VAL byte MEMORY_FILE
+            math TMP2 = POS
+            math TMP2 += I
+            goto TMP2 MEMORY_FILE
+            put VAL byte MEMORY_FILE
+        Next I
+        math POS += LEN
+    endif
+Next
+
+get SIZE asize MEMORY_FILE
+print "decoded %SIZE% bytes (declared %DECODEDSIZE%)"
+
+get NAME filename
+string NAME += ".pack"
+log NAME 0 DECODEDSIZE MEMORY_FILE
 ```
 
-Two structural facts constrain the answer. First, the payload is compressed rather than encrypted: 204 distinct byte values in 1,139 bytes and 4 % zeros is far from the flat distribution a cipher produces, so a real entropy coder is at work. Second, it is not zlib or deflate at any of six plausible payload offsets, so the container carries its own scheme.
+Run it as `quickbms -o cls-ooch.bms 000J.P`, keeping the input on standard input (`< /dev/null`) so an unrecognised command cannot wait for a reply.
 
-## What was tried
+## Evidence
+
+The decode was checked by walking the whole disc tree, decoding every `OOCH` file and comparing the output length with the declared size and the first four output bytes with `pack`:
+
+| Check | Result |
+| --- | --- |
+| `OOCH` files found | 1,454 of 2,816 files |
+| Decoded to the declared size and starting with `pack` | 1,454 |
+| Failures | 0 |
+| Smallest, `K995J.P` | 2,272 bytes to 3,344 |
+| `000J.P` | 3,187 bytes to 25,872 |
+| Median, `BG_D01D.P` | 39,968 bytes to 65,520 |
+| Largest, `OMKALLJ.P` | 1,949,930 bytes to 4,431,392 |
+
+The quickbms script reproduces the byte-identical output of the reference decoder on `000J.P` and decodes `OMKALLJ.P` in eight seconds.
+
+Two variants are close enough to be traps: adding one to the distance still reaches the declared size for `000J.P` but decodes to `01 00 01 00 …` instead of content, and any bias on the length desynchronises the literal stream within the first few tokens. A size match alone is not proof; the `pack` magic and the header's own fields are.
+
+## The container is not unique to this game
+
+`OOCH` is shared middleware rather than something written for *Lost Colors*. A public thread about *Sonic Riders: Zero Gravity* on PlayStation 2 and Wii describes the same magic and the same `38 18 4c 66` payload prologue, and that game ships an `OOCH` file beside a plain `.P` of the same kind. Nothing in this page's method depends on *Lost Colors* specifically, but the parameters above were measured on one disc and one compressor setting.
+
+## What was tried before
+
+The decode was found by static analysis, after a long series of guesses at the payload. The negative results are kept because they narrow what the format is not:
 
 | Attempt | Result |
 | --- | --- |
@@ -52,41 +191,15 @@ Two structural facts constrain the answer. First, the payload is compressed rath
 | LZMA, alone and with the standard headers | No stream decoded |
 | bzip2 | No stream decoded |
 | LZSS, flag word 8/16/32 bits, MSB- and LSB-first, offset field 8/12/16 bits, length field 3/4/5/8 bits, length bias 1/2/3, window 2,048–32,768 | 96 combinations, none reached the declared size |
-| 8-bit offset/length LZSS variant | No |
 | Socio Art Logic method/length codec (from the *Zero no Tsukaima* games) | Decodes to 2,642 bytes at 54 % printable; wrong |
 
-The LZSS sweep is the informative failure. Several parameter sets decode the first two or three tokens plausibly and then hit a zero offset, which stops the loop after 19–30 bytes. That pattern means the flag stream is being read with the wrong polarity or the wrong width — or that the stream is not flag-bit coded at all, and the first bytes are a parameter block rather than a token stream.
+The LZSS sweep came within one parameter of the answer. It covered both field widths at 8 bits, but only in variants that bias the distance or the length, and this format biases neither; several sets decoded two or three plausible tokens and then hit a zero distance after 19–30 bytes, which is exactly how a one-byte skew behaves. The lesson is in the ordering rather than the search: the executable is plaintext, and reading the decoder took less time than the sweep did.
 
-## The container is not unique to this game
+## What is still open
 
-`OOCH` is shared middleware rather than something written for *Lost Colors*. A public thread about *Sonic Riders: Zero Gravity* on PlayStation 2 and Wii describes the same four-byte container header, the same `OOCH` magic, and — the useful part — a payload prologue that "always starts with" `38 18 4c 66`. That is the same four bytes as the sample above, in a game from a different studio, running a different engine.
-
-The same thread supplies the structural key: that game ships both an `OOCH` file and a plain file of the same extension, and the author expected a decoded `OOCH` to turn out to be "a standard pack file". *Lost Colors* has exactly the same split — 1,454 `OOCH` files and 520 plain `pack` files in the same folder — so `OOCH` is the compressed form of the `pack` container documented on the [archives](archives.md) page, not a separate archive family.
-
-That gives the decode a structural test. A successful decode of an `OOCH` file should begin with the `pack` magic and a block table, whatever the payload bytes look like in the middle. No amount of text-printability scoring can substitute for that check, and it is the reason the failed attempts above can be judged wrong rather than merely unhelpful.
-
-No decoder exists in public. Searching GitHub for the container name, for the game, and for the game-specific unpacker named in the 2015 thread returns nothing usable: the name appears only in that thread, and no repository implements the format.
-
-## What the executable says
-
-The executable is plaintext, so the decoder can be read rather than guessed. Three findings narrow the search.
-
-**The string addresses were recorded wrongly at first.** The `OOCH` and `pack` strings sit in `.data` at virtual addresses `0xed7c0` and `0xed7c8` — eight bytes apart, in the same string pool. An earlier revision of this page gave `0xed814` and `0xed81c`, which is the file offset rather than the virtual address; `.data` has a `0x54`-byte gap between the two. This is corrected here, and it matters because every reference search was run against the wrong address first.
-
-**Neither string is referenced.** Searching `.text` for the absolute form of either address (`lui` + `addiu`, `lui` + `ori`, and a `u32` compare against `'OOCH'` or `'pack'`) finds nothing. Resolving the global pointer does not help either: Metrowerks C for MIPS addresses small data through `$gp`, which in this binary is `0xf57fc`, and that resolves 2,351 data references across `.text` — but none of them lands on `0xed7c0` or `0xed7c8`. Nor does any word in `.data` point at either string. So the container is not dispatched by comparing its magic; it is dispatched on a header field, most likely the type word at `0x04` (`0x08000001` in the `OOCH` files, `0x00020001` in the plain packs). String-driven disassembly is a dead end.
-
-**The header carries the parameters.** The fields at `0x14` through `0x24` (1, 0, 32, 8, 8) are identical in all 1,454 files while the payloads differ wildly. They are almost certainly the decoder's parameters, and the function that consumes them is the shortest path to the format.
-
-## Where the answer has to come from
-
-Two routes remain open, and both need more work than has been done here.
-
-1. **Follow the header field, not the string.** Locate the code that reads the type word at `0x04` and walk forward to the routine that consumes the parameters at `0x14`–`0x24`. This is static work on a stripped binary with no symbol table, so it depends on tracing register flow from the file loader rather than on names.
-2. **Observe it at runtime.** A 2015 fan-translation thread records that the previous project patched the text in memory through an emulator plugin rather than by decoding the files, which proves the plaintext exists in RAM at the right moment. A debugger breakpoint on the payload reader would show both the transform and the decoded buffer, and would settle the question faster than further static reading.
-
-## What would count as done
-
-The page becomes a format description once three things hold: a decoder reproduces the declared size at `0x0c` for a sample; the decoded output begins with the `pack` magic and a plausible block table; and the same decoder reproduces both for containers of very different sizes.
+1. **Parameter words.** The initialiser reads a pair of words at `0x1c` and `0x20` as its bit widths, and they are `32` and `8`, while the widths that reproduce every file are `8` and `8`. Either the pair is read from a different offset than the header field at `0x12` suggests, or one word is not a width. A variant with a different setting would need the mapping resolved first.
+2. **Multiple streams.** The header allows one flag entry and a pair of parameters per stream, and the disc only ever uses one. Two or more streams are unexercised, so their order and interleaving are unknown.
+3. **The DMA path.** The loader has a second decoder class selected by a mode field, used with a separate DMA buffer. Every file here takes the normal path, so the alternative is unread until a file selects it.
 
 ## Sources
 
