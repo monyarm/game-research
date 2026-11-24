@@ -11,9 +11,10 @@ site/
 work/
 
 # Nix gc roots (machine-specific symlinks into /nix/store) and the writable
-# Ghidra install mirror they feed
+# Ghidra install mirrors and extension downloads they feed
 .gc-roots/
 .ghidra-psp/
+.ghidra-ee/
 
 # Node dependencies for the repo-local REA MCP server
 node_modules/

@@ -41,6 +41,29 @@ Corollary: do not run a codec borrowed from a *different* engine over an unident
 
 Cheap statistics separate compression from encryption before any decoder attempt: on a small payload, an encrypted stream shows roughly 250+ distinct byte values and near-zero zeros; a compressed stream shows noticeably fewer distinct values and a few percent zeros.
 
+## Executable analysis lanes
+
+Read the ELF header before choosing a lane (`readelf -h`). `e_type` decides most of it.
+
+**PSP (Allegrex).** Decrypt first — a PPSSPP dump, not the shipped `EBOOT.BIN`; a file starting `~PSP` is still encrypted. REA can analyse it, but only as a static `ET_EXEC` with a parsed `.MIPS.abiflags` record: `pspfix.py in.bin out.bin` patches both. Then `open_binary` → `binary_overview`, and it runs Ghidra with `Allegrex:LE:32:default`, image base 0, so addresses equal file offsets. `search_strings` returns nothing on these targets — use `search_bytes` with a hex pattern.
+
+**PS2 (Emotion Engine, r5900).** A retail executable is already `ET_EXEC` with `e_flags 0x20920001`, so no patching. REA refuses it — its provider allowlist admits the PSP variant only, and adding a Ghidra module does not change that. Use Ghidra headless directly from the tree that has the Emotion Engine module baked in:
+
+```sh
+EE=$PWD/.gc-roots/ghidra-ee/lib/ghidra
+export JAVA_HOME=$PWD/.gc-roots/jdk
+export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+"$JAVA_HOME/bin/java" -Xmx2G -Djava.awt.headless=true \
+  -Djava.system.class.loader=ghidra.GhidraClassLoader \
+  -cp "$EE/Ghidra/Framework/Utility/lib/Utility.jar" ghidra.Ghidra \
+  ghidra.app.util.headless.AnalyzeHeadless <proj> <name> \
+  -import <elf> -processor r5900:LE:32:default [-noanalysis] [-postScript …]
+```
+
+`support/analyzeHeadless` from that tree is not usable: it resolves its install directory back to the plain Ghidra in the store, so the extension is never scanned ("Unsupported language"). The java command above is the only form that loads it. Two facts to record from the import log: `_mips_gp0_value` (the program's global pointer; gp-relative data refs resolve against it) and any section it skips without warning.
+
+Extensions ship as a zip and may contain no compiled `.sla`; Ghidra needs one. Compile with `<install>/support/sleigh -a <module>/data/languages`, then rebuild the tree.
+
 ## Try the section container first
 
 Many of these engines lay files out as: `u32 table size`, ascending `u32` absolute offsets, last entry equal to the file size as a sentinel, zero padding to the table size, then the sections back to back. If the first word is small and the last word of the run equals the file size, that is the container. Check for nesting — a section may itself be a container.

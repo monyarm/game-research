@@ -3,9 +3,9 @@
   "mcp": {
     "rea": {
       "type": "local",
-      // Repo-local only: the wrapper pins node, the JDK and the Ghidra PSP tree.
+      // Repo-local only: the wrapper pins node, the JDK and the Ghidra trees.
       "command": ["tools/rea-mcp.sh"],
-      "cwd": "./",
+      "cwd": ".",
       "enabled": true
     }
   }
