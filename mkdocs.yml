@@ -60,8 +60,11 @@ nav:
           - Overview: engines/bothtec-pc98.md
           - Payload: engines/bothtec-pc98/payload.md
           - Pictures: engines/bothtec-pc98/textures.md
-  - Games:
-      - "Tiger & Bunny — Hero's Day": games/tiger-and-bunny-heros-day.md
+      - "A98SYS (Active engine)":
+          - Overview: engines/a98sys.md
+          - Archives: engines/a98sys/archives.md
+          - Scripts: engines/a98sys/scripts.md
+          - Payloads: engines/a98sys/payloads.md
   - Notes:
       - Open questions: notes/open-questions.md
 
