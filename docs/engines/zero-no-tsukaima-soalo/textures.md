@@ -48,7 +48,7 @@ The handful that do not decode are false matches for the marker inside other blo
 | Offset | Type | Value |
 | --- | ---: | --- |
 | +0 | `u32` | Decoded size in bytes |
-| +4 | `u32` | `0x00000001` in every image block examined |
+| +4 | `u32` | Interleave factor — `1` in every image block examined, so an image block is stored linearly. `SCENE_ID` uses 8 and 16, and the transpose it selects is described on the [payload](payload.md) page |
 | +8 | — | Compressed stream, first byte `0xE6` |
 
 The first block of `SCENEDAT.BIN` in Symphony, from offset 0:

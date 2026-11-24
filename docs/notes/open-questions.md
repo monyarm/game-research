@@ -51,12 +51,9 @@ Nothing here is a plan. A row closes when a check produces evidence, and then th
 
 | Open | What is known | What would close it |
 | --- | --- | --- |
-| The `SCENE_ID` payload grammar | The block stream is understood, the compiled payload is not; every sampled decoded block opens `fa 00 00 74 43`. | Decoding one block against a scene whose content is known. |
-| Whether the `SCENE_ID` tag word selects a decoder | The word after the decoded size is `8` in every Symphony and Fantasy block checked, `1` in Concerto and `1` in image blocks, so it tracks the build. | A block whose decode depends on it. |
-| How `.ks` slot names map onto `SCENE_ID` offsets | The scene table is present in `SYSTEM`; the join key is not identified. | Matching one scene's names to its blocks. |
-| The `.ks` grammar | Only the name table is visible; the dialect is described nowhere in the data. | A script that survives round-tripping, or the Squirrel side that reads it. |
-| The page-size rule in `SYSTEM`'s paged text stream | Page boundaries are visible; whether the size is a constant is not established. | Two containers with different page counts. |
-| What the compiled closure units in `SYSTEM` contain | Symphony records 32–41 and Fantasy 31–36 are stock Squirrel closure streams opening `FA FA 52 49 51 53 01`, each with a `TRAP` slot label and one length-prefixed build path. The modules themselves are compiled. | Walking the closure stream, or dumping the loaded module from a running copy. |
+| How `.ks` slot names map onto `SCENE_ID` records | `SCENE_ID` holds one scene module per record, each with a `DataMake/SCENE/<name>.nut` build path in the same naming scheme as the `.ks` names in `SYSTEM`. No container spells the other's extension. | A build artefact or a record that names a `.ks` file directly. |
+| The `.ks` grammar | Only the name table is visible; the dialect is described nowhere in the data, and the scene modules that survive are Squirrel source or compiled Squirrel. | A script that survives round-tripping, or the Squirrel side that reads it. |
+| What the compiled scene and library modules contain | Every `SCENE_ID` record and the `SYSTEM` closure units are stock Squirrel closure streams opening `FA FA 52 49 51 53 01`, each with a `TRAP` slot label and one length-prefixed build path. The bodies are compiled. | Walking the closure stream, or dumping a loaded module from a running copy. |
 | The words in the constant `SOUND_ID` header record | Record 0 is empty and record 1 is the same 20 bytes on all three discs: `00000000 12ac0000 01000000 00100000 00000000`. | Reading them against the audio banks they precede. |
 | Who wrote the script control layer | Socio Art Logic credits Concerto as "adventure library development excluding script control", and the Squirrel binding is the most distinctive part of the engine. | Credits research on the trilogy. |
 

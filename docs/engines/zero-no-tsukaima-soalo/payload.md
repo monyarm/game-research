@@ -31,7 +31,7 @@ The builds are named by their subtitles: **Concerto** (*Koakuma to Harukaze no C
 | --- | --- | --- |
 | `SYSTEM` | Script library: `.nut` source pages, then the compiled closure units of the same modules | Fantasy and Symphony |
 | `SCENEDAT` | Scene backgrounds | All three |
-| `SCENE_ID` | Per-scene compressed blocks: compiled scene data on Fantasy and Symphony, script source on Concerto | All three |
+| `SCENE_ID` | Scene modules: compiled Squirrel closures on Fantasy and Symphony, source on Concerto | All three |
 | `NORMAL` | UI and shared textures | All three |
 | `SOUND_ID` | Audio banks | All three |
 | `VOICE_ID` | One voice clip per record | All three |
@@ -68,7 +68,7 @@ The index sums never reach the `.BIN` size. Symphony `SYSTEM` sums to 884,706 of
 
 ## `SYSTEM`: the script library
 
-`SYSTEM` is the readable container. On Symphony it is 42 records; records 0–31 are a **paged text stream** in Shift-JIS, cut mid-token at record boundaries, and each page begins with a run of `0xFF` padding. The record boundaries carry no structural meaning for the text; they exist because the container works in pages. Record 10 is zero-length.
+`SYSTEM` is the readable container, and it is the one container in the set with no compression and no 8-byte block header. On Symphony it is 42 records; records 0–31 are complete `.nut` source files stored verbatim in Shift-JIS, each beginning at a `//` or `/**` header or at a top-level assignment and ending on a closed statement. Record sizes are 732 to 54,064 bytes, and record 10 is zero-length. The `0xFF` that shows up at record starts is the inter-record fill, not page padding, and no record is split mid-token.
 
 | Records | Content | Evidence |
 | --- | --- | --- |
@@ -139,33 +139,49 @@ Compiled script units are stock Squirrel closure streams. The stream opens `FA F
 
 So the `.nut` text and the compiled units sit in the same `SYSTEM` pair, and the `0x08000010` tag above is the record type inside the closure stream rather than a container of its own.
 
-## `SCENE_ID`: compressed blocks
+## `SCENE_ID`: the scene modules
 
-`SCENE_ID` is a block stream like `SCENEDAT` and `NORMAL`, built on 2048-byte boundaries with the same 8-byte header and the same codec described on the [textures](textures.md) page. What changes between builds is the payload.
+`SCENE_ID` is a block stream like `SCENEDAT` and `NORMAL`, built on 2048-byte boundaries. Each record starts with the same 8-byte header and is followed by `0xFF` fill up to the next boundary:
 
-The header sits at the start of each index record, and each record is followed by `0xFF` fill up to the next 2048-byte boundary. Symphony's first four records, read at the offsets the index predicts, hold the same shape: a `u32` decoded size, a `u32` tag of `8`, then the stored stream beginning `FF FA 00 00 74 43`. The leading `0xFF` is consumed by the decoder — the decoded payload begins `FA 00 00 74 43`, one byte later.
+| Offset | Type | Meaning |
+| --- | --- | --- |
+| `0x00` | `u32` | Decoded size |
+| `0x04` | `u32` | Interleave factor |
+| `0x08` | — | Codec stream, described on the [textures](textures.md) page |
 
-Counting block headers on 2048-byte boundaries finds 536 in Symphony, 633 in Fantasy, and 377 in Concerto. Decoding 120 of them per game and inspecting the first part of each block:
+The second word is an interleave factor, not a content tag. After the codec returns, the engine transposes the decoded block: the bytes are treated as a matrix of `factor` columns and read column by column into linear output, so a factor of 1 makes the pass a plain copy. In the inspected Symphony executable the transpose is the routine at `0x116348`, called with the decoded buffer, the output, the decoded size and this word straight after the codec returns at `0x116048`. A record is therefore only complete after both steps.
 
-| Build | Blocks decoded | Payload | First bytes |
-| --- | ---: | --- | --- |
-| Symphony | 120 | Compiled scene data | `fa 00 00 74 43 61 10 6d ...` |
-| Fantasy | 120 | Compiled scene data | `fa 00 00 74 43 64 00 61 ...` |
-| Concerto | 120 | Squirrel source text | `/**\r\n * レイヤアクションモジュール関係ク ...` |
+Factors, counted over every record in the container:
 
-None of the 360 sampled blocks contained the word `function` in Symphony or Fantasy; the Concerto sample contained 233 occurrences. So Concerto keeps its script library as **plain source** in this container while the later builds keep **compiled units** here and put the source in `SYSTEM`.
+| Build | Records | Factor 1 | Factor 2 | Factor 8 | Factor 16 | Other |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Symphony | 600 | 11 | — | 525 | 64 | — |
+| Fantasy | 775 | 2 | — | 631 | 142 | — |
+| Concerto | 1920 | 377 | 1533 | — | — | 10 records at 3, 4, 6 or 12 |
 
-Concerto's blocks open with the same documentation comment style as `SYSTEM`'s `main.nut`:
+With the transpose applied, every record in Symphony and Fantasy opens with the Squirrel closure head `FA FA 52 49 51 53 01 00 00 00`, then a `TRAP` slot label, then the `0x08000010` string tag and a build path:
 
 ```text
-/**
- * レイヤアクションモジュール関係
- */
+fa fa 52 49 51 53 01 00 00 00  TRAP  0x08000010  DataMake/SCENE/bk1a_00.nut  main …
 ```
 
-The decoded sizes match the declared size exactly for these blocks: Symphony's first at offset 14336 declares 23,359 bytes and decodes to 23,359; Concerto's first at offset 2048 declares 34,593 and decodes to 34,593.
+All 600 Symphony records and all 775 Fantasy records carry exactly one `DataMake/SCENE/` path, and the names are unique per disc — `bk1a_00.nut` … `bk1a_m03.nut`, `bk1b_01.nut` … `bk4a_09.nut`. The record is a compiled scene module, the same shape as the compiled units in `SYSTEM`.
 
-The second header word is a tag that tracks the build rather than the block: `8` in every Symphony and Fantasy record checked, `1` in Concerto, and `1` in the image blocks. Whether the decoder branches on it, or it only records the content kind, is not established.
+Concerto's records are the source of the same modules, and they stay readable:
+
+```text
+initVariable();
+selectInit();
+selectItem("共通部", (0x01000000 +1861), null, true);
+select();            reset();
+title("プロローグ");
+set("event", {opacity = 100,y = 0,show = 1,level = 80,x = 0,image = (0x02000000 +1)});
+```
+
+Every Concerto record is fully printable once transposed, and its declared size is reproduced exactly. So Concerto keeps the scene scripts as source in this container while the later builds keep them compiled here and put their source library in `SYSTEM`.
+
+The `0x01000000` and `0x02000000` constants in that source are container ids: the executable encodes a record as `(archive index << 24) | record index`, with archive 0 = `NORMAL`, 1 = `SCENE_ID` and 2 = `SCENEDAT`. The three archives are created and named at `0x1155e8` in the inspected executable, from the strings `NORMAL`, `SCENE_ID` and `SCENEDAT`.
+
 
 ## `SCENEDAT` and `NORMAL`: aligned image blocks
 
@@ -195,8 +211,8 @@ Record sizes are whole numbers of 16-byte frames. This is why voice ids from the
 
 ## Unknowns
 
-- The `SCENE_ID` grammar: the block stream is understood, but what the compiled payload describes (scene, layer, or action) is not decoded.
-- Whether the `SCENE_ID` tag word selects a decoder path or only records the content kind.
-- Whether `SCENE_ID` block boundaries line up with any per-scene numbering, and how the `.ks` scene names in `SYSTEM` map onto them.
+- Whether a `SCENE_ID` build path (`DataMake/SCENE/bk1a_00.nut`) corresponds to a `.ks` name in `SYSTEM` (`BK3B_M01.ks`, `ST09D_10.ks`). The naming style matches and a build step plausibly renamed one to the other, but no record in either container names the other's extension.
+- What the compiled scene modules do once loaded: the body after the build path is Squirrel bytecode and has not been walked.
+- Whether `SCENE_ID` record order lines up with any per-scene numbering; the names are unique but not obviously ordered by chapter in the container itself.
 - What the compiled closure units in `SYSTEM` contain: their slot labels (`TRAP`, one per module) and build paths are readable, but the module bodies are compiled Squirrel and have not been walked.
 - What the constant `SOUND_ID` header record contains; one 20-byte record is all there is, and its five words are unread beyond being fixed.

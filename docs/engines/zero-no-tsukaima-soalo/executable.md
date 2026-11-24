@@ -60,6 +60,25 @@ The same fragment `%s\%s.HD;1` appears next to `/DataMake/` in the string pool, 
 
 The five data names shared by all three executables are `NORMAL`, `SCENEDAT`, `SCENE_ID`, `SOUND_ID`, and `VOICE_ID`. Symphony and Fantasy add a sixth, `SYSTEM`. Concerto does not: its only `SYSTEM` strings are memory-card paths (`MEMORYCARD:SYSTEMDATA`, `MEMCARD:SYSTEMSAVE`). That is the strongest evidence that Concerto folded the script library into a different container — see [payload layout](payload.md).
 
+### The three archives and how a record is addressed
+
+In Symphony's executable the container layer registers three archives at `0x1155e8`, each bound to a name string in the pool: archive 0 to `NORMAL`, 1 to `SCENE_ID`, and 2 to `SCENEDAT`. A record is addressed by a single word, `(archive << 24) | record`, which is why the script source names its targets as `(0x01000000 + 1861)` and `(0x02000000 + 1)` — `SCENE_ID` record 1861 and `SCENEDAT` record 1.
+
+The read path is short and separate from the scripting layer:
+
+| Routine | Role |
+| --- | --- |
+| `0x117af0` | Record size, in 2048-byte units |
+| `0x117aa8` | Record start, in the same units |
+| `0x117cd8` | Copies the record into a caller buffer; branches on an archive mode field at `+0x120` (direct copy, compressed, or table lookup) and can serve from a preloaded image when `+0x2d8` is set |
+| `0x115960` | Whole-record read: takes the address word, allocates the rounded size, calls the reader, and prints `data2size:%8d  ReadCh = %3d` from the string at `0x2286a8` |
+| `0x1163d8` | Block decode: reads the decoded size at `+0`, allocates, runs the codec on the stream at `+8`, then calls `0x116348` |
+| `0x116348` | Transpose by the interleave factor at `+4`, described on the [payload](payload.md) page |
+
+Records with a declared size above 64 KB leave the single-shot path and go through a chunked channel set (`0x120e58`, `0x121910`, `0x125b20`, `0x11d948`), which is the machinery behind the `ReadCh` counter in that debug line.
+
+These addresses are from the inspected Symphony copy; the two later builds were not compared routine by routine.
+
 Two strings are unexplained and left alone: every build carries `cdrom0:\SLPM_654.48;1`, a serial that matches none of these three games, and Concerto carries a Shift-JIS disc-access message (`…ディスクアクセスにトランスポートしました。`) beside the loader strings.
 
 ## Embedded scripting: Squirrel 2.1.2

@@ -158,4 +158,3 @@ The `VOICE_ID` pair is the one case where splitting is not worth the disk: Fanta
 
 ## Unknowns
 
-- Whether the page sizes used by `SYSTEM`'s paged text stream are a fixed constant. The page boundaries are visible but the rule behind them is not established.
