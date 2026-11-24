@@ -58,6 +58,9 @@ nav:
           - Textures: engines/tb-d3p/textures.md
   - Games:
       - "Tiger & Bunny — Hero's Day": games/tiger-and-bunny-heros-day.md
+      - "Ranma ½: Hiryuu Densetsu": games/ranma-half-hiryuu-densetsu.md
+  - Formats:
+      - "Bothtec PC-98 four-plane picture": formats/bothtec-pc98-picture.md
   - Notes:
       - Open questions: notes/open-questions.md
 

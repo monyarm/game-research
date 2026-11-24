@@ -33,6 +33,13 @@ A single place for my research on adventure and visual novel games: the engines 
 | [*Code Geass: Lost Colors*](https://vndb.org/v1502) | [CLS](engines/cls.md) | Crafts & Meister; PSP `ULJS-00135` (inspected) and PS2; 2008-03-27. |
 | [*Tiger & Bunny — Hero's Day*](games/tiger-and-bunny-heros-day.md) | [TB_D3P](engines/tb-d3p.md) | D3Publisher; PSP `NPJH50753` (inspected); 2013-03-20. |
 | *Scooby-Doo! Case File #3: Frights! Camera! Mystery!* | [Scooby-Doo! Case File #3: Flash runtime](engines/scooby-doo-case-file-3-flash.md) | The Learning Company; Windows 2000/XP; 2007 CD-ROM; disc required. |
+| [*Ranma ½: Hiryuu Densetsu*](games/ranma-half-hiryuu-densetsu.md) | In-house Bothtec system (unnamed) | Bothtec; PC-9801; eight floppy images; headerless four-plane pictures decoded. |
+
+## Formats
+
+| Format | Used by | Notes |
+| --- | --- | --- |
+| [Bothtec PC-98 four-plane picture](formats/bothtec-pc98-picture.md) | *Ranma ½: Hiryuu Densetsu* | `.R1`/`.G1`/`.E1`/`.B1` planes plus a 96-byte `.ALG` palette; quickbms converter published. |
 
 ## Notes
 
