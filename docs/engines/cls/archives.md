@@ -8,7 +8,7 @@ tags:
   - playstation-portable
   - container
 sources: []
-last_verified: 2026-11-23
+last_verified: 2026-11-24
 ai_assisted: true
 ---
 
@@ -39,29 +39,43 @@ Every `OOCH` file carries a fixed `0x800`-byte header before its payload, and `p
 | `0x10` | `18 00 1c 00` | two `u16`, 24 and 28: offset of the per-stream flag array and of the codec parameters |
 | `0x14` | 1 | number of codec streams |
 | `0x18` | 0 | flags entry for the single stream |
-| `0x1c` | 32 | codec parameter word |
-| `0x20` | 8 | codec parameter word |
-| `0x24` | 8 | codec parameter word |
+| `0x1c` | 32 | offset of the first stream's width pair, which is `0x20` |
+| `0x20` | 8 | distance field width in bits |
+| `0x24` | 8 | length field width in bits |
 
 The payload starts at `0x800` and is an LZSS bit stream that expands to a `pack` container; the grammar and a working extractor are on [Decoding the scene containers](decoding.md).
 
 ## pack: image and font bundles
 
-Both the background packages and the per-scene font packages use one container.
+Every unpacked payload on the disc is a `pack`: the 1,166 files that are stored plain, and the 1,454 `OOCH` files once their payload is decoded. 2,620 of them were parsed.
 
 | Offset | Field |
 | --- | --- |
 | `0x00` | `pack` |
-| `0x04` | `0x00020001` |
-| `0x08` | block count |
-| `0x0c` | unknown, `0x07e40000` in one sample |
-| `0x10` | block offsets, one `u32` per block |
-| after offsets | total file size |
-| at first offset | first block |
+| `0x04` | `u16` variant word: `1` on 2,512 containers, `2` on 23, and `3`, `4`, `5` or `7` on 85 more (below) |
+| `0x06` | `u16`, always `2`, so the pair reads `0x00020001` as a `u32` |
+| `0x08` | `u32` block count |
+| `0x0c` | `u32` whose low half is always zero; the high half reads 100, 2,000, 2,020, 2,500, 8,000 or 8,100 depending on the container, and what it means is not established |
+| `0x10` | `u32[count + 1]` ascending absolute block offsets; the last entry equals the file size |
+| `align16(0x14 + 4 * (count + 1))` | first block |
 
-`USRDIR/root` holds 520 of these, all backgrounds: `BG_A00B.P` is 65,520 bytes with a single block at offset `0x20` that begins `MIG.00.1PSP`, a GIM image. A scan of all 650 sub-blocks across the folder found GIM headers in every one, so no `pack` in `root` carries anything else.
+The `u32` after the offsets is what makes the table unambiguous: `pack` at `0x20` with `count = 1` needs `0x10` to `0x17` for its two words, so the first block starts at the next 16-byte boundary. A block runs to the next offset.
 
-`USRDIR/ScStr` holds 646 of them, one per scene, and each has three blocks. `S000J.P` (76,096 bytes) is representative:
+What the first block of each container is:
+
+| First block | Containers | What it is |
+| --- | ---: | --- |
+| `MIG.` | 1,208 | GIM image |
+| `FONTDATF` | 646 | per-scene font metrics (`ScStr/`) |
+| `00 01 50 53 50` | 646 | scene block, transparent header followed by `PSP` |
+| `FGB` | 11 | two-block art and background packages |
+| `PP` | 1 | sound bank |
+
+Blocks nest: 646 containers also hold a `FONTSTLB` block, 247 hold an `FGB` chunk, and 2,061 of the 3,464 blocks overall are GIM images.
+
+The 85 containers with a variant word of `3`, `4`, `5` or `7` are all `CH_FE_*` character art and use a different body: `0x08` is not a block count, a `u32 1` and a `u16` list sit between the header and the offsets, and the first block offset is `0x30`. That body is not mapped.
+
+`USRDIR/ScStr` holds 646 of these, one per scene, and each has three blocks. `S000J.P` (76,096 bytes) is representative:
 
 | Block | Offset | Magic | Contents |
 | --- | ---: | --- | --- |
@@ -81,7 +95,13 @@ So `ScStr` is the per-scene font resource, not the script. A Shift-JIS scan of t
 
 ## What is still open
 
-All five families are decoded at the container level. What is left is inside them: the text and the state machine in each of the 1,454 decoded scene containers, and which of the `pack` sub-blocks belong to a scene rather than to a font or a background.
+All five families are decoded at the container level. What is left is inside them.
+
+The text layer has not been located. Decoding all 1,454 `OOCH` containers and scanning every result for Shift-JIS finds no plaintext dialogue: every run that survives a strict CP932 filter turns out to be GIM or `FGB` image payload, which decodes into long kanji and katakana sequences that read as noise. The scene files themselves (`A###J.P`, `F###J.P`, `J###J.P`, `K###J.P`, `BTL###J.P`, 2,272 to 33,563 bytes) are sparse tables headed `00 01 50 53 50`, 96 % zero bytes, built from 16-byte records with an offset table that ascends in steps of 16. `ScStr/<scene>.P` is the per-scene font subset described above, not script storage, and `FCL.DIR` is only the list of the seven `.cvm` archives.
+
+None of `FONTSTLB`, `FONTDATF`, `FGB`, or `00 01 50 53 50` occurs as a byte sequence in the executable, so these blocks are not dispatched on their magic and a string hunt cannot find their loader. The same caveat applies to the working side of the format: `OOCH` and `pack` are both compared by routine at file offset `0x2d704` and `0x2e480`, and those two are the only magics in this engine that are.
+
+That leaves the dialogue either in a container type not yet walked, or stored as indices into the font rather than as characters.
 
 ## Sources
 

@@ -47,14 +47,16 @@ Offsets are file offsets. In the executable, this image maps virtual address `0x
 | `0x08` | `u32` | file size − `0x800` | Packed payload size |
 | `0x0c` | `u32` | varies | Decoded size |
 | `0x10` | `u16` | `0x18` | Offset of the per-stream flag array |
-| `0x12` | `u16` | `0x1c` | Offset of the codec parameter pairs |
+| `0x12` | `u16` | `0x1c` | Offset of the per-stream width-pair offsets |
 | `0x14` | `u8` | `1` | Number of codec streams |
 | `0x18` | `u32` | `0` | Flags entry for the single stream |
-| `0x1c` | `u32` | `32` | Codec parameter word 0 |
-| `0x20` | `u32` | `8` | Codec parameter word 1 |
-| `0x24` | `u32` | `8` | Codec parameter word 2 |
+| `0x1c` | `u32` | `32` | Offset of the first stream's width pair, i.e. `0x20` |
+| `0x20` | `u32` | `8` | Distance field width in bits |
+| `0x24` | `u32` | `8` | Length field width in bits |
 
-Every field above except `0x08` and `0x0c` is identical in all 1,454 files, so the disc uses one compressor setting throughout. `u16` at `0x06` is where the payload begins; it reads `0x800` everywhere here, which is why the payload always starts on the sector boundary. Which of the parameter words at `0x1c`, `0x20` and `0x24` carries the distance width is still open — see [What is still open](#what-is-still-open).
+Every field above except `0x08` and `0x0c` is identical in all 1,454 files, so the disc uses one compressor setting throughout. `u16` at `0x06` is where the payload begins; it reads `0x800` everywhere here, which is why the payload always starts on the sector boundary.
+
+The initialiser does not read the widths from `0x1c`; it reads an **offset** from there and follows it. Its walk is `piVar6 = header + u16@0x12`, then per stream `uVar3 = *(u32 *)(header + *piVar6)`, `uVar5 = ((u32 *)(header + *piVar6))[1]`, with `piVar6` advancing one word per stream. With `0x1c` holding `0x20`, the two widths therefore come from `0x20` and `0x24`, both `8` — which is what the decoder needs. The same routine derives the masks (`0xff` for each), the input bytes per token (`(8 + 8 + 8) >> 3` = 3) and the longest token (17 bits), and only one codec class is reachable, the one at `0x127c7c`.
 
 The loader picks the decoder by comparing the container's first word with the `OOCH` string, not by testing the type word: the routine at file offset `0x2d704` loads the word at file offset `0xed814` and compares it, with `0x2e480` doing the same for `pack` at `0xed81c`. Both loads are `$gp`-relative (`lui v0, 0xf; lw v0, -0x27ec(v0)`), which is why a search for absolute `lui` + `addiu` or `lui` + `ori` addressing finds no reference to either magic.
 
@@ -197,9 +199,8 @@ The LZSS sweep came within one parameter of the answer. It covered both field wi
 
 ## What is still open
 
-1. **Parameter words.** The initialiser reads a pair of words at `0x1c` and `0x20` as its bit widths, and they are `32` and `8`, while the widths that reproduce every file are `8` and `8`. Either the pair is read from a different offset than the header field at `0x12` suggests, or one word is not a width. A variant with a different setting would need the mapping resolved first.
-2. **Multiple streams.** The header allows one flag entry and a pair of parameters per stream, and the disc only ever uses one. Two or more streams are unexercised, so their order and interleaving are unknown.
-3. **The DMA path.** The loader has a second decoder class selected by a mode field, used with a separate DMA buffer. Every file here takes the normal path, so the alternative is unread until a file selects it.
+1. **Multiple streams.** The header allows one flag entry and a pair of parameters per stream, and the disc only ever uses one. Two or more streams are unexercised, so their order and interleaving are unknown.
+2. **The DMA path.** The loader has a second decoder class selected by a mode field, used with a separate DMA buffer. Every file here takes the normal path, so the alternative is unread until a file selects it.
 
 ## Sources
 
