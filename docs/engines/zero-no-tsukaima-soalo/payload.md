@@ -149,7 +149,7 @@ So the `.nut` text and the compiled units sit in the same `SYSTEM` pair, and the
 | `0x04` | `u32` | Interleave factor |
 | `0x08` | — | Codec stream, described on the [textures](textures.md) page |
 
-The second word is an interleave factor, not a content tag. After the codec returns, the engine transposes the decoded block: the bytes are treated as a matrix of `factor` columns and read column by column into linear output, so a factor of 1 makes the pass a plain copy. In the inspected Symphony executable the transpose is the routine at `0x116348`, called with the decoded buffer, the output, the decoded size and this word straight after the codec returns at `0x116048`. A record is therefore only complete after both steps.
+The second word is an interleave factor, not a content tag. After the codec returns the block is still interleaved: the decoded stream holds `factor` planes back to back, each of `size / factor` bytes, and the linear record is formed by taking one byte from each plane in turn before moving on. A factor of 1 therefore makes the pass a plain copy, and bytes past the last whole group are appended as they stand. In the inspected Symphony executable the transform is the routine at `0x116348`, called with the decoded buffer, the output, the decoded size and this word straight after the codec returns at `0x116048`. A record is only complete after both steps.
 
 Factors, counted over every record in the container:
 
@@ -182,6 +182,357 @@ Every Concerto record is fully printable once transposed, and its declared size 
 
 The `0x01000000` and `0x02000000` constants in that source are container ids: the executable encodes a record as `(archive index << 24) | record index`, with archive 0 = `NORMAL`, 1 = `SCENE_ID` and 2 = `SCENEDAT`. The three archives are created and named at `0x1155e8` in the inspected executable, from the strings `NORMAL`, `SCENE_ID` and `SCENEDAT`.
 
+### Extracting the scene modules
+
+The script below walks the index, decodes each block, undoes the interleave and writes one file per record. It keeps Shift-JIS as it stands, so compiled records stay binary and Concerto's source stays readable text.
+
+```quickbms
+# zero-no-tsukaima-scene-id.bms
+#
+# Recovers the scene modules from a Soalo SCENE_ID container.
+#
+#   quickbms zero-no-tsukaima-scene-id.bms SCENE_ID.HD out/
+#
+# Input : a .HD index; the matching .BIN is opened from the same folder.
+# Output: one file per record, rec_NNNN.nut for Squirrel closures and source,
+#         rec_NNNN.bin for anything else.
+#
+# A record is a block:
+#   0x00  u32  decoded size
+#   0x04  u32  interleave factor (1, or 8 and 16 on this disc)
+#   0x08  command stream
+# The stream decodes to "decoded size" bytes, then the block is de-interleaved
+# by the factor before it is usable.
+#
+# The stream is a Socio Art Logic command loop. Six history slots hold earlier
+# commands, seeded with six repeat commands:
+#   0xDF 0x00, 0xDF 0x01, 0xDF 0xFF, 0xDF 0x80, 0xDF 0x7F, 0xDF 0xFE
+# Command byte C, top three bits select the class:
+#   C & 0xE0 == 0xC0  repeat: write the next stream byte (C & 0x1F) + 2 times
+#   C & 0xE0 == 0xE0  literal: copy (C & 0x1F) + 1 bytes
+#   otherwise         re-run entry (C >> 5), then move that entry to the front.
+#                     Re-running a repeat writes its byte (C & 0x1F) + 2 times;
+#                     re-running a literal copies (C & 0x1F & 3) + 1 bytes
+#                     starting at 1 + ((C & 0x1F) >> 2) inside that literal.
+# A literal or repeat is inserted at the front and the last slot is dropped.
+# The last command may overshoot the declared size; the output is truncated.
+#
+# De-interleaving treats the decoded block as a matrix of "factor" columns and
+# reads it column by column. Factor 1 is a straight copy.
+#
+# Measured with QuickBMS 0.12.0 on the three inspected discs:
+#   Symphony (SLPS_258.98) SCENE_ID.HD   600 records written,   0 skipped, 55 s
+#   Fantasy  (SLPS_258.30) SCENE_ID.HD   775 records written,   0 skipped, 69 s
+#   Concerto (SLPS_257.08) SCENE_ID.HD  1920 records written,   1 skipped, 13 s
+# Every decoded record matched its declared size. Compiled records begin with
+# the Squirrel closure head FA FA 52 49 51 53; Concerto records are plain
+# Shift-JIS Squirrel source.
+#
+# Shift-JIS text is kept as-is, so convert afterwards if needed:
+#   iconv -f CP932 -t UTF-8 rec_0000.nut > rec_0000.utf8.nut
+
+endian little
+
+get HD_NAME basename
+string BASE_NAME = HD_NAME
+string BASE_NAME -= ".HD"
+string BIN_NAME = BASE_NAME
+string BIN_NAME += ".BIN"
+
+open FDSE BIN_NAME 1
+
+get HD_SIZE asize 0
+math REC_COUNT = HD_SIZE
+math REC_COUNT /= 4
+
+set REC_START long 0
+set MADE long 0
+set SKIPPED long 0
+set TRUNCATED long 0
+
+For IDX = 0 < REC_COUNT
+    math IOFF = IDX
+    math IOFF *= 4
+    goto IOFF 0
+    get PACKED long 0
+
+    math PAD = PACKED
+    math PAD += 2047
+    math PAD /= 2048
+    math PAD *= 2048
+
+    set DONE long 0
+
+    if PACKED > 8
+        goto REC_START 1
+        get OUTLEN long 1
+        get WORD long 1
+
+        if OUTLEN > 0
+            if OUTLEN <= 0x4000000
+                if WORD < 1
+                    math WORD = 1
+                endif
+                if WORD <= 64
+
+                    math SEND = REC_START
+                    math SEND += PAD
+
+                    # --- command stream -------------------------------------
+                    log MEMORY_FILE 0 0
+                    math V0 = REC_START
+                    math V0 += 8
+                    set POS long 0
+
+                    math H0 = 0x7FFFFF00
+                    math H1 = 0x7FFFFF01
+                    math H2 = 0x7FFFFFff
+                    math H3 = 0x7FFFFF80
+                    math H4 = 0x7FFFFF7f
+                    math H5 = 0x7FFFFFfe
+
+                    set KEEP long 1
+                    For KEEP == 1
+                        if POS >= OUTLEN
+                            set KEEP long 0
+                            break
+                        endif
+                        if V0 >= SEND
+                            set KEEP long 0
+                            break
+                        endif
+
+                        goto V0 1
+                        get CMD byte 1
+                        math BEF = V0
+                        math LEN5 = CMD
+                        math LEN5 &= 0x1F
+                        math CLS = CMD
+                        math CLS &= 0xE0
+
+                        if CLS == 0xC0
+                            math T = V0
+                            math T += 1
+                            goto T 1
+                            get OPB byte 1
+                            math N = LEN5
+                            math N += 2
+                            For R = 0 < N
+                                put OPB byte MEMORY_FILE
+                                math R += 1
+                            Next
+                            math POS += N
+                            math V0 += 2
+                            math H5 = H4
+                            math H4 = H3
+                            math H3 = H2
+                            math H2 = H1
+                            math H1 = H0
+                            math H0 = BEF
+                            set DONE long 1
+
+                        elif CLS == 0xE0
+                            math N = LEN5
+                            math N += 1
+                            math T = V0
+                            math T += 1
+                            goto T 1
+                            For R = 0 < N
+                                get OPB byte 1
+                                put OPB byte MEMORY_FILE
+                                math R += 1
+                            Next
+                            math POS += N
+                            math V0 += 1
+                            math V0 += N
+                            math H5 = H4
+                            math H4 = H3
+                            math H3 = H2
+                            math H2 = H1
+                            math H1 = H0
+                            math H0 = BEF
+                            set DONE long 1
+
+                        else
+                            math M = CMD
+                            math M >>= 5
+
+                            math E = H0
+                            if M == 1
+                                math E = H1
+                            elif M == 2
+                                math E = H2
+                            elif M == 3
+                                math E = H3
+                            elif M == 4
+                                math E = H4
+                            elif M == 5
+                                math E = H5
+                            endif
+
+                            set SEED long 0
+                            if E >= 0x70000000
+                                set SEED long 1
+                                math C2 = 0xDF
+                                math OPB = E
+                                math OPB &= 0xFF
+                            else
+                                goto E 1
+                                get C2 byte 1
+                            endif
+
+                            math C2CLS = C2
+                            math C2CLS &= 0xE0
+
+                            if C2CLS == 0xC0
+                                if SEED == 0
+                                    math T = E
+                                    math T += 1
+                                    goto T 1
+                                    get OPB byte 1
+                                endif
+                                math N = LEN5
+                                math N += 2
+                                For R = 0 < N
+                                    put OPB byte MEMORY_FILE
+                                    math R += 1
+                                Next
+                                math POS += N
+                                set DONE long 1
+                            elif C2CLS == 0xE0
+                                math N = LEN5
+                                math N &= 3
+                                math N += 1
+                                math T = LEN5
+                                math T >>= 2
+                                math T += 1
+                                math T += E
+                                goto T 1
+                                For R = 0 < N
+                                    get OPB byte 1
+                                    put OPB byte MEMORY_FILE
+                                    math R += 1
+                                Next
+                                math POS += N
+                                set DONE long 1
+                            endif
+
+                            if M == 1
+                                math H1 = H0
+                                math H0 = E
+                            elif M == 2
+                                math H2 = H1
+                                math H1 = H0
+                                math H0 = E
+                            elif M == 3
+                                math H3 = H2
+                                math H2 = H1
+                                math H1 = H0
+                                math H0 = E
+                            elif M == 4
+                                math H4 = H3
+                                math H3 = H2
+                                math H2 = H1
+                                math H1 = H0
+                                math H0 = E
+                            elif M == 5
+                                math H5 = H4
+                                math H4 = H3
+                                math H3 = H2
+                                math H2 = H1
+                                math H1 = H0
+                                math H0 = E
+                            endif
+
+                            math V0 += 1
+                        endif
+                    Next
+
+                    # --- de-interleave --------------------------------------
+                    log MEMORY_FILE2 0 0
+                    math ROW = OUTLEN
+                    math ROW /= WORD
+                    math BODY = ROW
+                    math BODY *= WORD
+
+                    For K = 0 < ROW
+                        For M = 0 < WORD
+                            math SRC = M
+                            math SRC *= ROW
+                            math SRC += K
+                            goto SRC MEMORY_FILE
+                            get OPB byte MEMORY_FILE
+                            put OPB byte MEMORY_FILE2
+                            math M += 1
+                        Next
+                        math K += 1
+                    Next
+
+                    if BODY < OUTLEN
+                        math T = BODY
+                        For I = T < OUTLEN
+                            goto I MEMORY_FILE
+                            get OPB byte MEMORY_FILE
+                            put OPB byte MEMORY_FILE2
+                            math I += 1
+                        Next
+                    endif
+
+                    # --- output name ----------------------------------------
+                    goto 0 MEMORY_FILE2
+                    get FIRST byte MEMORY_FILE2
+                    set IS_TEXT long 0
+                    if FIRST == 0xFA
+                        set IS_TEXT long 1
+                    elif FIRST >= 0x20
+                        if FIRST <= 0x7E
+                            set IS_TEXT long 1
+                        endif
+                    endif
+
+                    if IS_TEXT == 1
+                        string OUT_NAME p= "rec_%04d.nut" IDX
+                    else
+                        string OUT_NAME p= "rec_%04d.bin" IDX
+                    endif
+
+                    if POS < OUTLEN
+                        math TRUNCATED += 1
+                    endif
+
+                    log OUT_NAME 0 OUTLEN MEMORY_FILE2
+                    math MADE += 1
+                endif
+            endif
+        endif
+    endif
+
+    if DONE == 0
+        math SKIPPED += 1
+    endif
+
+    math REC_START += PAD
+Next IDX
+
+string MSG p= "%d records written, %d skipped, %d short" MADE SKIPPED TRUNCATED
+print "%MSG%"
+```
+
+Measured with QuickBMS 0.12.0 on the three inspected discs. Every record that was written reproduced its declared size exactly, and every one was checked byte for byte against a separate decoder written from the disassembly:
+
+| Build | Index entries | Written | Skipped | Output |
+| --- | ---: | ---: | ---: | --- |
+| Symphony | 600 | 600 | 0 | about 17 MB, all 600 opening `FA FA 52 49 51 53` |
+| Fantasy | 775 | 775 | 0 | about 21 MB, all 775 opening `FA FA 52 49 51 53` |
+| Concerto | 1921 | 1920 | 1 | about 9 MB, all printable source |
+
+The single skipped Concerto entry is the one zero-length index record. Nothing was under-filled on any disc: every block's command stream reached its declared size before the record's 2048-byte boundary.
+
+Because the output is Shift-JIS where it is text at all, convert it before reading:
+
+```sh
+iconv -f CP932 -t UTF-8 rec_0000.nut > rec_0000.utf8.nut
+```
 
 ## `SCENEDAT` and `NORMAL`: aligned image blocks
 

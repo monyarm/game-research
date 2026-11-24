@@ -22,7 +22,7 @@ sources:
     url: https://www.squirrel-lang.org/
   - title: Squirrel reference manual
     url: https://www.squirrel-lang.org/squirreldoc/
-last_verified: 2026-11-23
+last_verified: 2026-11-24
 ai_assisted: true
 ---
 
@@ -112,7 +112,7 @@ So the answer to "is it really just Squirrel" is: the language and the VM are st
 
 ## Extracting the `.nut` source
 
-Fantasy and Symphony keep the source as plain text pages inside `SYSTEM.BIN`, so the splitter below is enough: it walks the index, appends the text records in order and skips the compiled ones. Concerto has no `SYSTEM` pair at all — its modules sit in `SCENE_ID.BIN` as compressed blocks, and decoding those blocks is the whole job, with no record walk on top. Decoding one gives plain Squirrel source, not scene data: the first block at offset 2048 declares 34,593 bytes and begins `/** * レイヤアクションモジュール関係クラス */ class LayerModule {`, and roughly a third of its blocks contain `function` definitions. The codec is on the [textures](textures.md) page along with the MIT tool that already implements it for `SCENE_ID.BIN`.
+Fantasy and Symphony keep the source as one complete file per record inside `SYSTEM.BIN`, so the splitter below is enough: it walks the index, appends the text records in order and skips the compiled ones. Concerto has no `SYSTEM` pair at all — its modules sit in `SCENE_ID.BIN` as compressed, interleaved blocks, and the scene-module extractor on the [payload](payload.md#extracting-the-scene-modules) page decodes them, with no record walk on top. Decoding one gives plain Squirrel source, not scene data: the first block at offset 2048 declares 34,593 bytes and begins `/** * レイヤアクションモジュール関係クラス */ class LayerModule {`, and roughly a third of its blocks contain `function` definitions.
 
 ```quickbms
 # zero-no-tsukaima-nut-dump.bms
@@ -127,17 +127,16 @@ Fantasy and Symphony keep the source as plain text pages inside `SYSTEM.BIN`, so
 # The records hold two kinds of module. Ones shipped as source are plain
 # Shift-JIS text. Ones shipped compiled open with the closure head
 # FA FA 52 49 51 53 (SQIR reversed as RIQS) and are skipped here. Text
-# records are appended in record order with their 0xFF page padding removed,
-# so the result is one continuous script stream, not one file per page.
+# records are appended in record order with their 0xFF fill removed,
+# so the result is one continuous script stream, not one file per record.
 #
 # Measured with QuickBMS 0.12.0:
 #   Symphony (SLPS_258.98)  SYSTEM.HD   31 text records, 339,371 bytes
 #   Fantasy  (SLPS_258.30)  SYSTEM.HD   30 text records, 285,957 bytes
 #
 # Concerto (SLPS_257.08) ships no SYSTEM pair. Its modules sit in SCENE_ID.BIN as
-# compressed blocks, and decoding them is the whole job: no record walk. The
-# codec and the MIT tool that implements it are on the textures page, and the
-# decoded stream is plain Squirrel source, so it needs no further processing.
+# compressed, interleaved blocks; the scene-module extractor on the payload page
+# decodes those into plain Squirrel source.
 #
 # The text is Shift-JIS with ASCII syntax, so the output is readable source
 # with Japanese comments.
@@ -197,9 +196,7 @@ for i = 0 < REC_COUNT
         For P = 0 < WANT
             get B byte 1
             math P += 1
-            if B == 0x09 || B == 0x0A || B == 0x0D
-                math GOOD += 1
-            elif B >= 0x20
+            if B >= 0x20
                 if B <= 0x7E
                     math GOOD += 1
                 elif B >= 0x81
@@ -207,6 +204,14 @@ for i = 0 < REC_COUNT
                         math GOOD += 1
                     elif B >= 0xE0
                         if B <= 0xFC
+                            math GOOD += 1
+                        endif
+                    endif
+                endif
+            elif B >= 0x09
+                if B <= 0x0D
+                    if B != 0x0B
+                        if B != 0x0C
                             math GOOD += 1
                         endif
                     endif
