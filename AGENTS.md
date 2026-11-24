@@ -25,6 +25,8 @@ When the user does ask for a new page, follow the page rules below and add it to
 
 NovelVM (`https://github.com/monyarm/NovelVM`) is where the loader for each of these engines gets written. Every engine page here that documents a visual-novel engine must reference a NovelVM issue for that engine. If no issue exists for it, create one before the page is finished, and link it from the page body and from its sources.
 
+The link is two-way. The issue title names the engine, not just a game, and the issue body carries a `## Documentation` link to the published page at `https://monyarm.github.io/game-research/...`. An issue that files a whole engine family under one game's name is wrong even when it is technically the right issue.
+
 ## Before starting a title
 
 Before reverse-engineering a game from scratch, search the open web and GitHub first for existing research, format documentation, extractors and tools. Record what was searched and what came back, including the negative results, in the page's evidence table or its `## Open questions`. Starting from a clean-room probe when someone has already published the answer wastes the one pass that title gets.
