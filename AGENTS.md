@@ -21,6 +21,10 @@ Do not add engines, games, formats, companies, guides, or notes unless the user 
 
 When the user does ask for a new page, follow the page rules below and add it to the landing page and `mkdocs.yml` nav.
 
+## Before starting a title
+
+Before reverse-engineering a game from scratch, search the open web and GitHub first for existing research, format documentation, extractors and tools. Record what was searched and what came back, including the negative results, in the page's evidence table or its `## Open questions`. Starting from a clean-room probe when someone has already published the answer wastes the one pass that title gets.
+
 ## Non-negotiables
 
 1. **Evidence before prose.** Every factual claim must be observed, inferred with stated reasoning, or marked unverified. Do not turn a lead into a finding.
