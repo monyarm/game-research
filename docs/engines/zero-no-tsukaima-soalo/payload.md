@@ -165,6 +165,8 @@ With the transpose applied, every record in Symphony and Fantasy opens with the 
 fa fa 52 49 51 53 01 00 00 00  TRAP  0x08000010  DataMake/SCENE/bk1a_00.nut  main …
 ```
 
+The names are the same set as the `.ks` scene scripts named in `SYSTEM`. On the inspected Symphony pair, 596 of the 600 records match a `.ks` stem exactly after lowercasing, and `SYSTEM` names those 596 under 624 `.ks` occurrences because a scene can appear under more than one slot. The four records with no `.ks` counterpart are `st08_00`, `tu_chk`, `tu_yost` and `tun_staff` — a chapter scene and three staff or check scenes the narrative table does not list. Order is not shared: `SYSTEM` lists the scenes in playing order, the container stores them by name, so the two sides are joined by name rather than by position.
+
 All 600 Symphony records and all 775 Fantasy records carry exactly one `DataMake/SCENE/` path, and the names are unique per disc — `bk1a_00.nut` … `bk1a_m03.nut`, `bk1b_01.nut` … `bk4a_09.nut`. The record is a compiled scene module, the same shape as the compiled units in `SYSTEM`.
 
 Concerto's records are the source of the same modules, and they stay readable:
@@ -562,7 +564,7 @@ Record sizes are whole numbers of 16-byte frames. This is why voice ids from the
 
 ## Unknowns
 
-- Whether a `SCENE_ID` build path (`DataMake/SCENE/bk1a_00.nut`) corresponds to a `.ks` name in `SYSTEM` (`BK3B_M01.ks`, `ST09D_10.ks`). The naming style matches and a build step plausibly renamed one to the other, but no record in either container names the other's extension.
+- How a name reaches a record number at run time. The scene scripts address records numerically — `selectItem("共通部", (0x01000000 +1861), …)` in Concerto source is archive 1, record 1861 — and the name-to-index table that produces those numbers has not been read.
 - What the compiled scene modules do once loaded: the body after the build path is Squirrel bytecode and has not been walked.
 - Whether `SCENE_ID` record order lines up with any per-scene numbering; the names are unique but not obviously ordered by chapter in the container itself.
 - What the compiled closure units in `SYSTEM` contain: their slot labels (`TRAP`, one per module) and build paths are readable, but the module bodies are compiled Squirrel and have not been walked.
