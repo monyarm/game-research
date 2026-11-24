@@ -165,7 +165,11 @@ With the transpose applied, every record in Symphony and Fantasy opens with the 
 fa fa 52 49 51 53 01 00 00 00  TRAP  0x08000010  DataMake/SCENE/bk1a_00.nut  main …
 ```
 
-The names are the same set as the `.ks` scene scripts named in `SYSTEM`. On the inspected Symphony pair, 596 of the 600 records match a `.ks` stem exactly after lowercasing, and `SYSTEM` names those 596 under 624 `.ks` occurrences because a scene can appear under more than one slot. The four records with no `.ks` counterpart are `st08_00`, `tu_chk`, `tu_yost` and `tun_staff` — a chapter scene and three staff or check scenes the narrative table does not list. Order is not shared: `SYSTEM` lists the scenes in playing order, the container stores them by name, so the two sides are joined by name rather than by position.
+The names are the same set as the `.ks` scene scripts named in `SYSTEM`. On the inspected Symphony pair, 596 of the 600 records match a `.ks` stem exactly after lowercasing, and `SYSTEM` names those 596 under 624 `.ks` occurrences because a scene can appear under more than one slot. The four records with no `.ks` counterpart are `st08_00`, `tu_chk`, `tu_yost` and `tun_staff` — a chapter scene and three staff or check scenes the narrative table does not list. Order is not shared: 2 of 600 positions agree, so the two sides are joined by name rather than by position.
+
+The name array itself sits inside a compiled unit, not a table record: `SYSTEM` record 33 (offset 407,552, 40,233 bytes) is `DataMake/SCENE/scenes.nut`, part `TRAP`, function `main`, followed by a `TRAPY` part and then 605 string objects — 600 `.ks` names plus `scenes.nut`, `main`, `next` and two others. Each name is a bare `10 00 00 08` + length + bytes object with no integer beside it, and a scan of every byte offset in the record finds no run of 600 consecutive `u32` values forming a permutation of 0–599. Concerto settles the rest: its 1,921 records decode to 4.8 MB of Squirrel source in which `bk1a`, `ST01_06`, `SCENE/`, `.nut` and `.ks` all occur zero times. Scene references there are numbers only, `selectItem("共通部", (0x01000000 +1861), null, true)`.
+
+So the record numbers are assigned when the game is built, not carried in the shipped pairs. The containers hold the names (in `SYSTEM`) and the modules (in `SCENE_ID`) and no table joining them; recovering the exact number for a given scene needs the build toolchain or a runtime trace, not another read of the data.
 
 All 600 Symphony records and all 775 Fantasy records carry exactly one `DataMake/SCENE/` path, and the names are unique per disc — `bk1a_00.nut` … `bk1a_m03.nut`, `bk1b_01.nut` … `bk4a_09.nut`. The record is a compiled scene module, the same shape as the compiled units in `SYSTEM`.
 
@@ -564,7 +568,7 @@ Record sizes are whole numbers of 16-byte frames. This is why voice ids from the
 
 ## Unknowns
 
-- How a name reaches a record number at run time. The scene scripts address records numerically — `selectItem("共通部", (0x01000000 +1861), …)` in Concerto source is archive 1, record 1861 — and the name-to-index table that produces those numbers has not been read.
+- How a name reaches a record number at run time. The scene scripts address records numerically — `selectItem("共通部", (0x01000000 +1861), …)` in Concerto source is archive 1, record 1861 — but the number is assigned at build time: `SYSTEM` carries the name array with no index beside it and `SCENE_ID` carries the modules with no table joining them.
 - What the compiled scene modules do once loaded: the body after the build path is Squirrel bytecode and has not been walked.
 - Whether `SCENE_ID` record order lines up with any per-scene numbering; the names are unique but not obviously ordered by chapter in the container itself.
 - What the compiled closure units in `SYSTEM` contain: their slot labels (`TRAP`, one per module) and build paths are readable, but the module bodies are compiled Squirrel and have not been walked.
