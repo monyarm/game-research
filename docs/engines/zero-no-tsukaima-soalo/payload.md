@@ -15,7 +15,7 @@ games: []
 formats: []
 maturity: partial
 sources: []
-last_verified: 2026-11-23
+last_verified: 2026-11-24
 ai_assisted: true
 ---
 
@@ -64,7 +64,7 @@ Record count is always the `.HD` size divided by four, because the index is a fl
 | `SOUND_ID.BIN` | 150704128 | 424 | 106 |
 | `VOICE_ID.BIN` | 981067776 | 64768 | 16192 |
 
-The index sums never reach the `.BIN` size. Symphony `SYSTEM` sums to 884,706 of 927,744 bytes; `SOUND_ID` to 380,907,904 of 381,030,400. The remainder is padding inside and after the last record, not a separate region.
+The index sums never reach the `.BIN` size. Symphony `SYSTEM` sums to 884,706 of 927,744 bytes; `SOUND_ID` to 380,907,904 of 381,030,400. The difference is the 2048-byte rounding of each record: record *n* begins at the running sum of `align(size[i], 2048)` for `i < n`, and that sum reproduces the `.BIN` size exactly in all six containers on all three discs, so nothing is left over at the end. The fill itself is `0xFF` and nothing else — on Symphony's `SCENE_ID` the 624,991 padding bytes are all `0xFF`.
 
 ## `SYSTEM`: the script library
 
@@ -140,6 +140,8 @@ So the `.nut` text and the compiled units sit in the same `SYSTEM` pair, and the
 
 `SCENE_ID` is a block stream like `SCENEDAT` and `NORMAL`, built on 2048-byte boundaries with the same 8-byte header and the same codec described on the [textures](textures.md) page. What changes between builds is the payload.
 
+The header sits at the start of each index record, and each record is followed by `0xFF` fill up to the next 2048-byte boundary. Symphony's first four records, read at the offsets the index predicts, hold the same shape: a `u32` decoded size, a `u32` tag of `8`, then the stored stream beginning `FF FA 00 00 74 43`. The leading `0xFF` is consumed by the decoder — the decoded payload begins `FA 00 00 74 43`, one byte later.
+
 Counting block headers on 2048-byte boundaries finds 536 in Symphony, 633 in Fantasy, and 377 in Concerto. Decoding 120 of them per game and inspecting the first part of each block:
 
 | Build | Blocks decoded | Payload | First bytes |
@@ -160,7 +162,7 @@ Concerto's blocks open with the same documentation comment style as `SYSTEM`'s `
 
 The decoded sizes match the declared size exactly for these blocks: Symphony's first at offset 14336 declares 23,359 bytes and decodes to 23,359; Concerto's first at offset 2048 declares 34,593 and decodes to 34,593.
 
-The blocks carry the second header word `8` in Symphony and Fantasy and `1` in Concerto. Whether that selects the decoder or records the content kind is not established.
+The second header word is a tag that tracks the build rather than the block: `8` in every Symphony and Fantasy record checked, `1` in Concerto, and `1` in the image blocks. Whether the decoder branches on it, or it only records the content kind, is not established.
 
 ## `SCENEDAT` and `NORMAL`: aligned image blocks
 
@@ -170,11 +172,13 @@ Both containers hold compressed TIM2 images in 2048-byte-aligned blocks, each in
 
 ## `SOUND_ID` and `VOICE_ID`
 
-`SOUND_ID` carries a small header record. In Symphony, record 0 is 20 bytes and the index confirms it: `HD[1] = 20`. The header reads as counts and offsets:
+`SOUND_ID` opens with an empty record and a constant. `HD[0]` is zero, so record 0 occupies no bytes, and record 1 is 20 bytes reading:
 
 ```text
 00000000 12ac0000 01000000 00100000 00000000
 ```
+
+That 20-byte record is byte-identical on all three discs. The other 20-byte entries in the same container are short audio clips with distinct payloads — 36 of them in Symphony, 6 in Fantasy — so the constant is a single header record, not a size class.
 
 Later records are audio banks of several megabytes, with no `VAGp` or `VAGi` header anywhere in the file — one `VAG` string occurs once, far into the file, and is not a valid header. Music is sequenced rather than streamed as samples, so the banks hold instrument data, not finished tracks.
 
@@ -189,7 +193,7 @@ Record sizes are whole numbers of 16-byte frames. This is why voice ids from the
 ## Unknowns
 
 - The `SCENE_ID` grammar: the block stream is understood, but what the compiled payload describes (scene, layer, or action) is not decoded.
-- The second header word in `SCENE_ID` blocks: `8` on Fantasy and Symphony, `1` on Concerto.
+- Whether the `SCENE_ID` tag word selects a decoder path or only records the content kind.
 - Whether `SCENE_ID` block boundaries line up with any per-scene numbering, and how the `.ks` scene names in `SYSTEM` map onto them.
 - `SYSTEM`'s binary tail on Fantasy and Symphony: rec 36 on Symphony is a 337,910-byte count table, and the following records are unmapped.
-- Whether `SOUND_ID` record 0's header is a bank table or a fixed 20-byte preamble; only one record has been examined.
+- What the constant `SOUND_ID` header record contains; one 20-byte record is all there is, and its five words are unread beyond being fixed.

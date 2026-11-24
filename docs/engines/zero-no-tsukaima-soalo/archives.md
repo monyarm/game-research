@@ -17,7 +17,7 @@ maturity: documented
 sources:
   - title: QuickBMS
     url: https://aluigi.altervista.org/quickbms.htm
-last_verified: 2026-11-23
+last_verified: 2026-11-24
 ai_assisted: true
 ---
 
@@ -67,7 +67,7 @@ Boundary checks: Symphony `SYSTEM` record 0 is a 4,894-byte script page, so reco
 ## Things that will trip up a naive reader
 
 - **The sizes do not add up to the file size.** Symphony's `SYSTEM` records sum to 884,706 bytes of a 927,744-byte file; `SOUND_ID` sums to 380,907,904 of 381,030,400. The difference is the 2048-byte rounding of each record, not a hidden region — a reader that advances by the raw size drifts out of step from the first record on.
-- **Records are internally padded.** Many records begin with a long run of `0xFF` before real content, which is why a naive text scan says a record starts with garbage. `SYSTEM`'s text records are a paged stream, so padding appears at every page boundary.
+- **The fill after each record is `0xFF`, not zero.** Because a record starts on a boundary and the next one starts on the next boundary, the rounding slack trails each record. Measured over Symphony's `SCENE_ID`, every one of the 624,991 padding bytes is `0xFF`. That is why a naive text scan reports garbage at the end of a record, and why `SYSTEM`'s pages look `0xFF`-led: the slack of one page runs into the next.
 - **Record boundaries are not block boundaries.** In `SCENEDAT` the image blocks are 2048-byte aligned like everything else, but they do not line up with the sizes in the index. Use the [texture carver](textures.md) for images instead of this splitter.
 - **Zero-length records exist.** Symphony's `SYSTEM` index has one.
 
@@ -158,5 +158,4 @@ The `VOICE_ID` pair is the one case where splitting is not worth the disk: Fanta
 
 ## Unknowns
 
-- Why some containers carry a trailing unreferenced region at all; nothing in the executables has been found that reads it.
 - Whether the page sizes used by `SYSTEM`'s paged text stream are a fixed constant. The page boundaries are visible but the rule behind them is not established.
