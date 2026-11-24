@@ -20,7 +20,7 @@ A single place for my research on adventure and visual novel games: the engines 
 | --- | --- | --- | --- |
 | [Scooby-Doo! Case File #3: Flash runtime](engines/scooby-doo-case-file-3-flash.md) | Multimedia runtime / SWF | *Scooby-Doo! Case File #3: Frights! Camera! Mystery!* | 117 v8/AVM1 SWFs in a stock Flash Player 8 projector; runs well in Ruffle. |
 | [Soalo (Zero no Tsukaima PS2 engine)](engines/zero-no-tsukaima-soalo.md) | Adventure engine / Squirrel (Socio Art Logic library) | *Zero no Tsukaima* PS2 trilogy, plus *Kazeiro Surf* (PS2) and *GA Geijutsuka* (PSP) | `.BIN`/`.HD` record pairs, Squirrel scripting, compressed TIM2 blocks; internal name only. |
-| [CLS engine](engines/cls.md) | Adventure engine (in-house PSP/PS2 framework) | *Code Geass: Lost Colors* | `OOCH` scene containers (decoded), `pack` images and fonts, CRI ADX audio; text layer not yet read. |
+| [CLS engine](engines/cls.md) | Adventure engine (in-house PSP/PS2 framework) | *Code Geass: Lost Colors* | `OOCH` scene containers (decoded), glyph-indexed dialogue in `ScStr`, CRI ADX audio. |
 | [TB_D3P engine](engines/tb-d3p.md) | Visual novel engine (in-house) | *Tiger & Bunny — Hero's Day* | Section containers, paletted `.TPL` textures, Shift-JIS dialogue in a tagged bytecode; event opcodes partly decoded. |
 
 ## Games

@@ -38,11 +38,11 @@ Only the PSP release has been inspected. The PlayStation 2 release exists and is
 | Platforms | PlayStation Portable (inspected), PlayStation 2 (not inspected) |
 | Scene container | `OOCH` files, fixed `0x800` header, LZSS payload that decodes to a `pack` file |
 | Image container | `pack` files holding GIM images |
-| Scripting | Not established — scene payloads decode to `pack` containers, and the text layer inside them has not been read |
+| Scripting | Not established — text is stored as glyph indices in `ScStr/<scene>.P`, but the control flow around it is not read |
 | Audio | CRI ADX (`.ADX`, `.AFS`, `PPHD`/`PBD` banks) |
 | Video | `PSMF` (`.PMF`) |
 | Modern runtime | PPSSPP, from a disc image |
-| Status here | Executable, containers and the `OOCH` codec documented; the text layer inside the decoded containers not yet read; the container is shared with games from other studios |
+| Status here | Executable, containers, the `OOCH` codec and the scene text documented; the cell attributes and the scene containers' own records unread; the container is shared with games from other studios |
 | Confidence | Mixed |
 
 ## Why it matters
@@ -59,7 +59,7 @@ That makes it a good subject for one specific question: where does the middlewar
 | Audio and video are CRI middleware, not engine code | Observed | `ADXT/PSP Ver.10.05`, `ADXF Ver.7.63`, `ADXRT Ver.3.1.1` in the executable; `.ADX`, `.AFS`, `.PMF` files on the disc |
 | Scene files are `OOCH` with a fixed `0x800` header | Observed | 1,454 files, `payload size = file size − 0x800` in every one, no mismatches |
 | Images are `GIM` inside `pack` containers | Observed | 650 `pack` sub-blocks start `MIG.00.1PSP` |
-| `ScStr` holds per-scene font resources, not script | Observed | `FONTDATF` metrics, a GIM atlas and `FONTSTLB` in every sample; no readable text in a CP932 scan |
+| `ScStr` holds the scene's text as glyph indices | Observed | All 646 files parse as three blocks; `FONTDATF` maps index to codepoint and `FONTSTLB` holds 29,461 lines, decoded by the script on [CLS archives and containers](cls/archives.md) |
 | `OOCH` payloads decode to `pack` with a bit-flagged LZSS stream | Observed | All 1,454 files reach the declared size and start with the `pack` magic; the script is on [Decoding the scene containers](cls/decoding.md) |
 | The `OOCH` container is shared with other studios' games | Inferred | A public thread on *Sonic Riders: Zero Gravity* (PS2, Wii) reports the same magic and the same `38 18 4c 66` payload prologue, and that game ships an `OOCH` file beside a plain `.P` of the same kind |
 | The container is dispatched by comparing its magic | Observed | The routine at file offset `0x2d704` compares the first word with the `OOCH` string at file offset `0xed814`; the `pack` counterpart is at `0x2e480` with `0xed81c` |
@@ -82,10 +82,11 @@ The developer credited by VNDB is CRAFTS & MEISTER. No game page exists yet for 
 
 ## What to record next
 
-1. Read a decoded scene container. The `pack` layout is documented, so the next question is where a scene's text and its state machine actually live inside one — and whether the dialogue is plain Shift-JIS once the nesting is unwrapped.
-2. Establish where dialogue lives once the stream decodes: in the 1,454 scene containers, or in a subset of them.
-3. Check whether the PlayStation 2 release ships the same `clsOO*` framework and the same containers, or an earlier set.
-4. Work out what `SE/*.PHD` and `ScStr` contribute to a scene, since both are addressed per scene name and neither holds text.
+1. Read the 4-byte cell attribute that precedes every glyph index in `FONTSTLB`. It is `0` almost everywhere, with `1` and `9` scattered through the records, and it is the only field in the text that is still unexplained.
+2. Establish what the per-glyph `u32` metrics in `FONTDATF` mean, and why the `u16` at `FONTSTLB + 0x0c` is `101` in all 646 files.
+3. Map scene ids to file names: `root/` and `ScStr/` use the same families (`A###`, `F###`, `G###`, `J###`, `K###`, `BTL###`, `OP`, `OMKALL`) with different prefixes, and the pairing is not established.
+4. Read the scene containers themselves (`A###J.P` and the rest). They hold no strings, but they are the only candidate for the control flow that drives the text.
+5. Check whether the PlayStation 2 release ships the same `clsOO*` framework and the same containers, or an earlier set.
 
 ## Sources
 
