@@ -1,6 +1,6 @@
 ---
 title: "TB_D3P: event scripts"
-description: "The EVENT chapter files in Tiger & Bunny — Hero's Day: a fixed header, a u32 table, a Shift-JIS choice-label pool, and a bytecode whose opcode set is only partly decoded."
+description: "The EVENT chapter files in Tiger & Bunny — Hero's Day: a fixed header, a u32 table, a Shift-JIS choice-label pool, and a bytecode whose instruction widths are decoded but whose operand meanings are not."
 type: engine
 status: draft
 confidence: mixed
@@ -24,7 +24,7 @@ ai_assisted: true
 
 The eleven `EVENT/CH00_00.EVT` … `CH10_00.EVT` files are the chapter-level scripts. They are not the dialogue — that lives in the [event data files](script.md) — and they are not a [section container](containers.md). They hold one thing that appears nowhere else on the disc: the text of the player's answers.
 
-This page documents the string pool, which is observed and reliable, and records the bytecode as partially decoded. The opcode set is the one structure on this disc that has resisted reading.
+This page documents the string pool and the instruction widths, both observed and reproducible, and records what the operands mean as still open.
 
 ## Files
 
@@ -66,44 +66,56 @@ Every string in every file is an option the player picks: `力を使う`, `力�
 
 That division is worth stating plainly because it is the opposite of what the file names suggest. `EVENT/` is the branch structure; `PHASE/BIN/` is the prose.
 
-## The bytecode: what is established
+## The bytecode
 
-The body from `0x97` is variable-length instructions. Reading it byte by byte, these forms recur:
+The body is a stream of variable-length instructions, and the records in the `0x80` table give the parse a hard anchor: a record starts at its table entry and must end exactly at the next one. A walk that keeps trying widths until every record in every file lands on its boundary finds a single consistent assignment, and it is the one below. It covers all eleven files — 584 records — with no unknown opcode anywhere.
 
-| Bytes | Length | Observation |
+| Opcode | Bytes | Notes |
 | --- | ---: | --- |
-| `0f <u16>` + zero | 3 or 4 | Appears in long ascending runs — `0f 01`, `0f 02`, `0f 03`, `0f 05`, `0f 06`, `0f 0a`, `0f 0b`, `0f 0c`, `0f 0f`, `0f 10`, `0f 11`, `0f 37` — as if filling a table of slots. `0f 36 00 11` is followed by an `11` opcode, which reads as three bytes; the run `0f 01 00 00 0f 02 00 00` reads as four with the extra zero as a bare `0x00` instruction |
-| `01 <u32>` | 5 | Arguments look like node ids: `0x19a`, `0x1b6`, `0x1de`, `0x20a`, `0x1ba`, `0x329`, `0x345`. `0x345` recurs many times, which argues for a shared target rather than a per-site address |
-| `09 10 <u32>` | 6 | Seen as `09 10 00 00 00 00` |
-| `13 10 <u32>` | 6 | Seen as `13 10 02 00 00 00` |
-| `10 10 <u32>` | 6 | `10`, a `0x10` tag byte, then a `u32` operand |
-| `11 <u8>` | 2 | Seen as `11 10` |
-| `12` | 1 | Terminator; the following byte is an opcode, not an operand |
-| `0d 00 10 00 00 00` | 6 or 7 | Trailing zero byte unsettled |
-| `0e 01 00` | 3 | — |
+| `0x00` | 1 | No operand |
+| `0x01` | 5 | `u32` operand, always an in-file address |
+| `0x09` | 6 | 7 for two rare second bytes |
+| `0x0a` | 5 | `u32` operand, always an in-file address |
+| `0x0c` | 7 | 11 when the second byte is `0x14` |
+| `0x0d` | 6 | 7 for three rare second bytes |
+| `0x0e` | 3 | — |
+| `0x0f` | 3 | `0f <u16>`; `0f 36 00` opens a record, 577 sites against 584 records |
+| `0x10` | 6 | `10 <tag> <u32>` |
+| `0x11` | 1 | Opens a block |
+| `0x12` | 1 | Closes a block |
+| `0x13` | 6 or 10 | 10 when the trailing word is an in-file address |
+| `0x14` | 10 | — |
 
-A repeated block accounts for most of the stream: `<12 11>` then two `<10 10 u32>` then `<01 u32>`, with the middle arguments rising through `0x01`, `0x21`, `0x28`, `0x2a`, `0x2b`, `0x42` in one run while `01 <u32>` stays at `0x345`.
+Instruction counts across the eleven files:
 
-The file size is odd — 955 bytes — so the final instruction is three bytes long, which is consistent with the `0e 01 00` form.
+| Opcode | Count | Opcode | Count |
+| --- | ---: | --- | ---: |
+| `0x00` | 1365 | `0x0d` | 126 |
+| `0x01` | 6205 | `0x0e` | 140 |
+| `0x09` | 636 | `0x0f` | 1223 |
+| `0x0a` | 591 | `0x10` | 7939 |
+| `0x0c` | 723 | `0x11` | 3314 |
+| — | — | `0x12` | 3326 |
+| — | — | `0x13` | 1423 |
+| — | — | `0x14` | 58 |
 
-## The bytecode: what is not established
+The one width that is not decided by the opcode alone is `0x13`. The form `13 10 <word> <word>` is ten bytes when the second word is an address that falls inside the file and lands on an instruction start, and six bytes otherwise. Of the 726 ten-byte sites, 725 pass that test; of the 697 six-byte sites, 663 have no plausible second word at all. That is the rule used above, and it is the reason a table keyed on the opcode alone could not walk the stream.
 
-A fixed opcode-to-width table cannot walk the file. With the widths that hold over the first hundred bytes — `0x00` 1, `0x01` 5, `0x10` 6, `0x11` 2, `0x12` 1, `0x0e` 3 — and any width for the rest, an exhaustive search over `CH00_00.EVT` from `0x97` to the end of the file finds no assignment that reaches the last byte exactly. The walk gets as far as `0x18f`, where the stream reads `13 10 01 00 00 00 | 99 01 00 00 | 0e 01 00`, and `0x99` is not a control byte: the `99 01 00 00` there looks like a `u32` operand, so the instruction before it must be seven bytes rather than six.
+Everything with an address operand — `0x01`, `0x0a`, and the second word of a ten-byte `0x13` — points at a byte that the parse reaches as an instruction start, which is the strongest evidence that the widths are right: the branch targets land.
 
-Two readings survive that failure, and neither has been proven:
+`0x11` and `0x12` bracket blocks, with 3,314 opens against 3,326 closes, so a few closes do not follow an open directly. The repeated block of `<10 10 u32>` instructions followed by `<01 u32>` and a `12` is the most common shape, and the `<01 u32>` argument inside it is usually the same address across a run, which fits a shared target rather than a per-site value.
 
-- The widths are context-dependent — the same leading byte meaning different things depending on the previous instruction.
-- One or more opcodes take a variable-length operand, most likely a length-prefixed list.
+## What the widths do not settle
 
-A search that lets every opcode take any width does terminate, but only with a degenerate assignment (most bytes one byte wide, hundreds of "instructions"), which fits the file without explaining it.
+The parse is consistent, not proven unique. `0x00` is a one-byte instruction with no operand, so any byte the walk does not consume can be absorbed as one, and more than one width assignment can still reach a record boundary. The widths above are the assignment that also keeps every address operand landing on an instruction start; a reading without that constraint would fit the bytes as well, and a search that lets every opcode take any width does terminate with a degenerate assignment — most bytes one byte wide, hundreds of "instructions" — which fits the file without explaining it.
 
-Regions the `01 <u32>` operands point at mostly land on `0f` or `09` instruction boundaries (`0x1a6`, `0x1ba`, `0x302`, `0x329`, `0x339`), but `0x345` does not. Under the context-dependent reading that inconsistency is expected; under the fixed-width reading it is a contradiction.
+The second byte of most instructions is a descriptor, and its values cluster: `0x10`, `0x14` and `0x15` above `0x0f`, and `0x00`, `0x01`, `0x03`, `0x05`, `0x0a` below it. `0x0c` and `0x13` change operand count with it, so it is a type or a mode rather than padding, but what each value selects is not established.
 
 The `EVENT` directory name and the `.EVT` extension are not present in the executable as bytes: a search of the whole loaded image for `EVENT`, `.EVT` and `EVT` finds nothing. The game therefore opens these files without a name string in the binary — a directory listing or an index — so there is no loader to find by name, and the opcode set has to come from the data or from a runtime trace.
 
 ## Extraction tooling
 
-None is offered. Nothing here needs a reader to get the strings out: they are plaintext Shift-JIS in an uncompressed file, so the label text is recoverable with any string dumper. What is missing is the mapping from answer to branch target, and that depends on the opcode set that is not yet decoded.
+None is offered. The strings need no reader — they are plaintext Shift-JIS in an uncompressed file, so any string dumper recovers the labels. What is still missing is the mapping from answer to branch target, and that needs the operand meanings, not another extractor.
 
 The [container](containers.md) splitter explicitly does not handle these files, and the quickbms detection test in that script rejects them, which is the intended behaviour.
 
@@ -115,10 +127,11 @@ The [container](containers.md) splitter explicitly does not handle these files, 
 
 ## Unknowns
 
-- The opcode set, as described above. `CH10_00.EVT` (20,439 bytes, 74 strings) is the best target for a second pass because it has the most branch instances.
+- What each instruction does, and what its operands mean. The widths say where instructions start and stop; they say nothing about what `0x10`, `0x13` or `0x0c` commands the game to do, or what the descriptor byte selects.
+- Why `0x13` sometimes carries a second address word and sometimes does not. The rule above classifies the sites, but the two forms have not been matched to two behaviours.
 - What the records in the `0x80` table are — one per offset, drawn from a small set of lengths — and whether they are scenes, branch groups or label blocks.
 - Why `CH00_00.EVT` carries two words that are not offsets after its two real entries.
-- Whether the `01 <u32>` operands are file offsets, record indices or node ids. `0x345` recurs, which fits a node id.
+- Whether the `01 <u32>` operands are file offsets, record indices or node ids. They land on instruction starts, which fits a code address; `0x345` recurs many times in one file, which fits a node id. Both readings are open.
 - Whether `CH00_00.EVT` is a real chapter or a template — it holds only the `ダミー` placeholder and is 955 bytes.
 
 ## Sources
