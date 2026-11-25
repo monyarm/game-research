@@ -88,8 +88,8 @@ Nothing here is a plan. A row closes when a check produces evidence, and then th
 | Operand widths for most commands | 17 of the ~54 command values have a measured width; the rest are unknown. | The command dispatch in `SLPS_255.87`, read once from the `0x25` tag comparison. |
 | What the second byte after `0x25` means | It is `0x00` for most records but takes ten other values; the `0x04` and `0x06` groups look like separate command sets. | Same dispatch read. |
 | Whether `08 xx 00 00 00` is a second instruction form | Five-byte items of that shape appear between records and break a linear walk at `0x457f` of `ADVENTURE_MAIN.PAC`. | Same dispatch read, or a successful full-file walk. |
-| Where `#AMT` palettes live | One block reads as 640×480 with a 307,200-byte 8-bit payload; the palette was not located. | Decoding one small `#AMT` to a viewable image. |
-| Whether some `#AMT` files are CRI-MPS compressed | CRI MPS 1.924 is linked, so compression is plausible; sizes in the archive do not cluster. | Comparing two similarly named textures' payload sizes to their headers. |
+| Where `#AMT` palettes live | The block layout is confirmed (`0x20` header, offset table, `0x30`-byte entries with `w × h` matching the size field), but no palette was located and no image was rendered. | Decoding one small `#AMT` to a viewable image. |
+| Whether the `#AMT` format codes mean compression | Two codes appear (`0x21` in 3,108 entries, `0x61` in 291); CRI MPS 1.924 is linked. | Comparing the payload of one entry of each code against its declared `w × h`. |
 | What `#AMP` and `#AMM` records hold | Both are `u32` offset tables with constant stride (`0x14`, `0x2c`). | Following one offset of each from a known model. |
 | The voice-line index | `VO_AFS.AFS` holds 6,209 identical-size ADX files, so per-line naming is elsewhere. | Finding a table in `DATA_PS2.AFS` with 6,209 entries. |
 | The `&`-marker vocabulary in dialogue | Colour is clear (`&S0H24R90G60B60#`); the terminator is `&/`. | A script that uses each marker, or the text renderer. |

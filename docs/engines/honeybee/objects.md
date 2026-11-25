@@ -29,7 +29,7 @@ Content in `DATA_PS2.AFS` is a family of blocks with four-character magics that 
 
 | Magic | Extension | Count | Role | Confidence |
 | --- | --- | ---: | --- | --- |
-| `#AMT` | `.amt` | 1,359 | Texture: header plus pixel payload | observed |
+| `#AMT` | `.amt` | 1,359 | Texture: header, offset table, 0x30-byte entries | observed |
 | `#AMB` | `.amb` | 14 | Menu bundle wrapping several `#AMT` | observed |
 | `#AMO` | `.amo` | 174 | Model; wraps a `#AMG` geometry block | observed |
 | `#AMP` | `.amp` | 2,377 | Offset table, stride `0x14` | observed, role inferred |
@@ -39,18 +39,45 @@ Content in `DATA_PS2.AFS` is a family of blocks with four-character magics that 
 
 ## `#AMT` — textures
 
-The first entry of `DATA_PS2.AFS` is `ADV_BGD_001.AMT`, 308,384 bytes, and its header is readable as resolution plus payload size:
+An `#AMT` file is a header, an offset table, and one or more 0x30-byte texture entries. Verifying the arithmetic over all 1,359 files confirms the layout for 1,343 of them; the other 16 either have no entries or did not parse.
 
 ```text
-#AMT
-00 00 00 00 | 02 00 00 00 | 01 00 00 00 | 20 00 00 00
-30 00 00 00        <- header or first-block size, 0x30
-61 13 00 00 00 0a 00 09 00 80 02 e0 01 60 00 00 00 00 b0 04 00 b8 ff …
+0000  23 41 4d 54 | 20 00 00 00 | 00 00 00 00 | 02 00 00 00   #AMT, 0x20, 0, 2
+0010  01 00 00 00 | 20 00 00 00 | 00 …                          count 1, table at 0x20
+0020  30 00 00 00  00 …                                          entry offsets: one, 0x30
+0030  00 00 00 00 | 61 00 00 00 | 13 00 00 00 | 0a 00 09 00     entry 0
+0040  80 02 e0 01 | 60 00 00 00 | 00 b0 04 00 | 01 00 00 00
+0050  00 00 00 00 | 80 b0 04 00 | 00 04 00 00 | b8 ff 00 00
 ```
 
-Within that block, `80 02 e0 01` is 640 and 480 as little-endian `u16`, and `00 b0 04 00` is 307,200 — exactly 640 × 480, the size of the bytes that follow. The pixels after it read as 8-bit indices (`37 2d 37 2d …`), so this block is an uncompressed 640×480 8-bit image.
+| Offset | Type | Meaning |
+| --- | --- | --- |
+| `+0x00` | `char[4]` | `#AMT` |
+| `+0x04` | `u32` | `0x20` — header size |
+| `+0x08` | `u32` | `0` in every file read |
+| `+0x0c` | `u32` | `2` in every file read |
+| `+0x10` | `u32` | entry count |
+| `+0x14` | `u32` | `0x20` — table offset |
+| `+0x20` | `u32[count]` | entry offsets; entries are `0x30` bytes apart and the first is the table end rounded up to 16 bytes |
 
-That reading is **inferred**: the three numbers agree with the payload size and with a background image's expected dimensions, but the palette was not located and the remaining `#AMT` files were not compared. The binary also links CRI **MPS** (1.924), a texture decoder, so some `#AMT` files are likely compressed — which would explain why the sizes in the archive do not cluster.
+Entry record (0x30 bytes):
+
+| Offset | Type | Meaning |
+| --- | --- | --- |
+| `+0x00` | `u32` | `0` in the files read |
+| `+0x04` | `u32` | format code — `0x21` in 3,108 entries, `0x61` in 291 |
+| `+0x08` | `u32` | `19` in every entry read |
+| `+0x10` | `u16`, `u16` | width, height |
+| `+0x18` | `u32` | exactly `width × height` in every entry checked |
+| `+0x28` | `u32` | `0x300`, `0x400`, `0x1000`, `0x4000` or `0x10000` — size-like, not yet interpreted |
+
+The verified invariant is `w × h == the u32 at +0x18` for every entry of every parseable file. `ADV_BGD_001.AMT` is one entry of 640 × 480 = 307,200, which is 0x4b000 — the number that first suggested the payload size.
+
+Files may hold several entries: 837 hold one, 271 hold three, 97 hold two, 43 hold four, and the rest between five and sixteen. `FONT.AMT` is the largest at 79 entries and 2.6 MB, i.e. the font is a texture atlas in a single `.AMT`.
+
+Two files are 32-byte stubs with count 0 — `BANNER_CATALOG_NAME_WINDOW.AMT` and `BANNER_CATALOG_TEXT_WINDOW.AMT` — so an empty `#AMT` is legal and a reader must tolerate it.
+
+What is still **inferred**: that the payload after the entry table is raw indexed colour. The pixel bytes read as 8-bit indices, entry `+0x28` takes values `0x300` (768 = 256 × 3) and `0x400` (1024 = 256 × 4), which is where a palette would sit in either RGB555 or RGBA form, but no palette was located and no image was rendered. The binary links CRI **MPS** (1.924), a texture decoder, so the `0x21` and `0x61` format codes may mark compressed and uncompressed payloads rather than two uncompressed variants.
 
 ## `.TWF` — draw descriptors
 
@@ -87,7 +114,8 @@ None of these tables was decoded; they are listed so that a later pass does not 
 
 ## Unknowns
 
-- Where `#AMT` palettes live, and which of the `#AMT` files are CRI-MPS compressed.
+- Where `#AMT` palettes live, and whether the `0x21`/`0x61` format codes mean CRI-MPS compressed versus raw.
+- The meaning of entry `+0x28` (`0x300`–`0x10000`) and of the constant `19` at entry `+0x08`.
 - What `#AMP` and `#AMM` records contain, and how a model references them.
 - Whether `#AMG` stores vertices, display lists, or both.
 - The `.TWF` field semantics, and why only 323 of 1,359 textures have one (probably because only full-screen backgrounds are drawn through it).
