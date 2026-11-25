@@ -78,3 +78,19 @@ Nothing here is a plan. A row closes when a check produces evidence, and then th
 | The launch path | The projector's first SWF is not recorded. | Opening the disc's launcher once and noting the first file loaded. |
 | Whether the 117 SWFs are the whole set | The inspected copy holds 117 v8/AVM1 SWFs; whether content loads from elsewhere is unchecked. | Watching for loads by relative path during a run. |
 | Visible defects | None recorded. | A run with timestamps or scene descriptions. |
+
+## HoneyBee (Sugar Sugar Rune engine)
+
+*Sugar Sugar Rune: Koi mo Oshare mo Pick-Up!*, PlayStation 2. The archive layer and the filename manifest are solved; the script grammar and the `#AM*` block layouts are not.
+
+| Open | What is known | What would close it |
+| --- | --- | --- |
+| Operand widths for most commands | 17 of the ~54 command values have a measured width; the rest are unknown. | The command dispatch in `SLPS_255.87`, read once from the `0x25` tag comparison. |
+| What the second byte after `0x25` means | It is `0x00` for most records but takes ten other values; the `0x04` and `0x06` groups look like separate command sets. | Same dispatch read. |
+| Whether `08 xx 00 00 00` is a second instruction form | Five-byte items of that shape appear between records and break a linear walk at `0x457f` of `ADVENTURE_MAIN.PAC`. | Same dispatch read, or a successful full-file walk. |
+| Where `#AMT` palettes live | One block reads as 640×480 with a 307,200-byte 8-bit payload; the palette was not located. | Decoding one small `#AMT` to a viewable image. |
+| Whether some `#AMT` files are CRI-MPS compressed | CRI MPS 1.924 is linked, so compression is plausible; sizes in the archive do not cluster. | Comparing two similarly named textures' payload sizes to their headers. |
+| What `#AMP` and `#AMM` records hold | Both are `u32` offset tables with constant stride (`0x14`, `0x2c`). | Following one offset of each from a known model. |
+| The voice-line index | `VO_AFS.AFS` holds 6,209 identical-size ADX files, so per-line naming is elsewhere. | Finding a table in `DATA_PS2.AFS` with 6,209 entries. |
+| The `&`-marker vocabulary in dialogue | Colour is clear (`&S0H24R90G60B60#`); the terminator is `&/`. | A script that uses each marker, or the text renderer. |
+| Whether the engine covers other titles | Only this release is known to ship `#AMT` and `HoneyBee.cpp`. | A second Dimps PS2 title's archive listing. |

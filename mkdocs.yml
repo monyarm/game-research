@@ -68,6 +68,12 @@ nav:
           - Archives: engines/a98sys/archives.md
           - Scripts: engines/a98sys/scripts.md
           - Payloads: engines/a98sys/payloads.md
+      - "HoneyBee (Sugar Sugar Rune engine)":
+          - Overview: engines/honeybee.md
+          - Executable findings: engines/honeybee/executable.md
+          - Archives: engines/honeybee/archives.md
+          - Objects and textures: engines/honeybee/objects.md
+          - Scripts: engines/honeybee/scripts.md
   - Notes:
       - Open questions: notes/open-questions.md
 
