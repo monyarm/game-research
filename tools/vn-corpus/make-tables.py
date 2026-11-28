@@ -36,11 +36,29 @@ META = {
     "siglus_rs": ("siglus-rs", "https://github.com/Lulzx/siglus-rs", "MPL-2.0", "88f9cee", "Siglus / RealLive / UK2 / AVG32", "reimplementation"),
     "cmvs-rs": ("cmvs-rs", "https://github.com/astudyinyellow/cmvs-rs", "Apache-2.0 OR MIT", "af64920", "CMVS", "reimplementation"),
     "shiinario_rs": ("shiinario-rs", "https://github.com/kiKiRei/ShiinaRio", "MIT", "3e560c6", "ShiinaRio", "reimplementation"),
+    "DISTRUST": ("Danganronpa decompilation", "https://github.com/Pucas01/DISTRUST", "CC0-1.0", "5526cd4", "Spike Chunsoft Danganronpa (PSP)", "matching decomp"),
+    "dds-decomp": ("Digital Devil Saga decompilation", "https://github.com/Megami-Decomps/dds-decomp", "none", "e714912", "Atlus SMT (PS2)", "matching decomp"),
+    "smt3-decomp": ("Shin Megami Tensei III decompilation", "https://github.com/Megami-Decomps/smt3-decomp", "none", "08ecf20", "Atlus SMT (PS2)", "matching decomp"),
+    "persona-psx": ("Persona decompilation (PS1)", "https://github.com/daanhenke/persona-psx", "none", "dfd1cd4", "Atlus Persona (PS1)", "matching decomp"),
+    "smt1dasm": ("Shin Megami Tensei disassembly", "https://github.com/spannerisms/smt1dasm", "GPL-3.0", "6d950c0", "Atlus SMT (SFC)", "disassembly"),
+    "tokimemo-ps1-decomp": ("Tokimeki Memorial decompilation", "https://github.com/CosmicScribe64/tokimemo-ps1-decomp", "CC0-1.0", "3c60705", "Konami Tokimeki Memorial (PS1)", "matching decomp"),
+    "ghost-trick-vita": ("Ghost Trick decompilation", "https://github.com/liambsulliva/ghost-trick-vita", "none", "1b614d0", "Cing (DS)", "matching decomp"),
+    "ethornell-rs": ("ethornell-rs", "https://github.com/xmoezzz/ethornell-rs", "MPL-2.0", "0b870c3", "BGI/Ethornell", "reimplementation"),
+    "ikuradroid": ("ikuradroid", "https://github.com/VienDesuPorting/ikuradroid", "GPL-3.0", "2dbde94", "Ikura / VileVN port", "port of released source"),
+    "krkr2": ("KiriKiri 2", "https://github.com/krkrz/krkr2", "GPL-2.0", "dec49af", "KiriKiri", "released source"),
 }
 
 COLS = ["project", "target", "kind", "licence", "commit", "url",
         "engine", "boilerplate", "middleware", "sdk_crt", "thirdparty",
         "data", "tooling", "decompiled", "asm", "note"]
+
+NOTES = {
+    "persona4-decomp": "engine share 65% of its own decomp",
+    "persona3fes-decomp": "engine share 72%",
+    "tokimemo-ps1-decomp": "drafts/ holds 4.28M mechanically generated C lines, excluded from engine",
+    "krkr2": "trunk/ only; vendor/ and the branches/tags SVN copies excluded",
+    "smt1dasm": "pure assembly listing",
+}
 
 
 def read_buckets(key):
@@ -81,11 +99,11 @@ def main():
             "tooling": b.get("tooling", 0),
             "decompiled": b.get("decompiled", 0),
             "asm": b.get("asm", 0),
-            "note": "",
+            "note": NOTES.get(key, ""),
         })
     rows.sort(key=lambda r: -r["engine"])
     with open(os.path.join(OUT, "source-loc.csv"), "w", newline="") as fh:
-        w = csv.DictWriter(fh, COLS)
+        w = csv.DictWriter(fh, COLS, lineterminator="\n")
         w.writeheader()
         w.writerows(rows)
 

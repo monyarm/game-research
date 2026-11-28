@@ -1,13 +1,22 @@
 project,target,kind,licence,commit,url,engine,boilerplate,middleware,sdk_crt,thirdparty,data,tooling,decompiled,asm,note
-Persona 4 decompilation,Atlus SMT/Persona (PS2),matching decomp,none,3a28140,https://github.com/Raikaru/Persona4-Decompilation,510869,0,260228,8760,1586,0,1270042,0,1708,
-Persona 3 FES decompilation,Atlus SMT/Persona (PS2),matching decomp,CC0-1.0,81da989,https://github.com/Raikaru/Persona3-FES-Decompilation,443007,0,181684,18416,0,0,51952,0,0,
+Digital Devil Saga decompilation,Atlus SMT (PS2),matching decomp,none,e714912,https://github.com/Megami-Decomps/dds-decomp,580796,0,0,0,0,0,57107,0,0,
+Persona 4 decompilation,Atlus SMT/Persona (PS2),matching decomp,none,3a28140,https://github.com/Raikaru/Persona4-Decompilation,510869,0,260228,8760,1586,0,1270042,0,1708,engine share 65% of its own decomp
+Persona 3 FES decompilation,Atlus SMT/Persona (PS2),matching decomp,CC0-1.0,81da989,https://github.com/Raikaru/Persona3-FES-Decompilation,443007,0,181684,18416,0,0,51952,0,0,engine share 72%
+KiriKiri 2,KiriKiri,released source,GPL-2.0,dec49af,https://github.com/krkrz/krkr2,388693,0,0,0,908557,0,59852,0,4586,trunk/ only; vendor/ and the branches/tags SVN copies excluded
 siglus-rs,Siglus / RealLive / UK2 / AVG32,reimplementation,MPL-2.0,88f9cee,https://github.com/Lulzx/siglus-rs,376044,16263,0,0,65891,65992,19136,0,0,
+Shin Megami Tensei III decompilation,Atlus SMT (PS2),matching decomp,none,08ecf20,https://github.com/Megami-Decomps/smt3-decomp,334305,0,0,0,0,0,44483,0,0,
+Tokimeki Memorial decompilation,Konami Tokimeki Memorial (PS1),matching decomp,CC0-1.0,3c60705,https://github.com/CosmicScribe64/tokimemo-ps1-decomp,249871,0,0,0,0,104478,141042,4283381,0,"drafts/ holds 4.28M mechanically generated C lines, excluded from engine"
+ethornell-rs,BGI/Ethornell,reimplementation,MPL-2.0,0b870c3,https://github.com/xmoezzz/ethornell-rs,197696,5564,0,0,318228,0,0,0,270236,
+Ghost Trick decompilation,Cing (DS),matching decomp,none,1b614d0,https://github.com/liambsulliva/ghost-trick-vita,192952,135364,0,0,0,0,99399,0,0,
 cmvs-rs,CMVS,reimplementation,Apache-2.0 OR MIT,af64920,https://github.com/astudyinyellow/cmvs-rs,180646,14613,0,0,0,0,6142,0,13,
 Hotel Dusk decompilation,Cing (DS),matching decomp,none,dcd74d8,https://github.com/usename00/hotel-dusk-decomp,127496,1182,0,0,0,0,376,0,0,
 Impacto,MAGES./5pb.,reimplementation,ISC,ad20204,https://github.com/CommitteeOfZero/impacto,124256,5245,0,0,59822,0,0,0,0,
 OpenBGI,BGI/Ethornell,reimplementation,GPL-2.0,e6e9e24,https://github.com/uyjulian/openbgi,119784,27482,0,0,0,0,31079,0,0,
 KiriKiri Z,KiriKiri,released source,BSD-3-Clause (W.Dee),fd5c4ba,https://github.com/krkrz/krkrz,113725,36872,0,0,774,0,2527,0,0,
+Persona decompilation (PS1),Atlus Persona (PS1),matching decomp,none,dfd1cd4,https://github.com/daanhenke/persona-psx,113307,0,0,0,0,0,1922,0,0,
+ikuradroid,Ikura / VileVN port,port of released source,GPL-3.0,2dbde94,https://github.com/VienDesuPorting/ikuradroid,94770,8994,0,0,1356108,0,0,0,3295,
 xsystem4,AliceSoft System 4,reimplementation,GPL-2.0,d3f93bc,https://github.com/nunuhara/xsystem4,74553,0,0,0,1135,0,0,0,0,
+Danganronpa decompilation,Spike Chunsoft Danganronpa (PSP),matching decomp,CC0-1.0,5526cd4,https://github.com/Pucas01/DISTRUST,53201,0,0,0,0,0,25814,0,0,
 Ace Attorney 2 decompilation,Capcom AA (GBA),matching decomp,none,91cd5f6,https://github.com/atasro2/pwaa2,42838,0,0,0,0,0,9242,0,117223,
 rlvm,RealLive,reimplementation,GPL-3.0,e38cda7,https://github.com/eglaysher/rlvm,42479,2138,0,0,83260,0,9213,0,0,
 xsystem35-sdl2,AliceSoft System 3.x,reimplementation,GPL-2.0,4cabebf,https://github.com/kichikuou/xsystem35-sdl2,41053,2813,0,0,0,0,0,0,0,
@@ -20,3 +29,4 @@ Xuse engine sources,Xuse XLVNS,released source,none,7a4bc8f,(no public repositor
 ONScripter,NScripter,reimplementation,GPL-2.0,848a608,https://github.com/onscripter/onscripter,17210,3392,0,0,942,11464,0,0,0,
 libai5,Elf ai5 (PC-98/Win),reimplementation,GPL-3.0,779913d,https://github.com/b-stack/libai5,9320,0,0,0,0,0,0,0,0,
 libnpengine,Nitroplus,reimplementation,LGPL-3.0,da1a175,https://github.com/TriggerRokko/libnpengine,4856,0,0,0,0,0,0,0,0,
+Shin Megami Tensei disassembly,Atlus SMT (SFC),disassembly,GPL-3.0,6d950c0,https://github.com/spannerisms/smt1dasm,3,0,0,0,0,0,0,0,251146,pure assembly listing

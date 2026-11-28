@@ -46,7 +46,7 @@ A single place for my research on adventure and visual novel games: the engines 
 
 | Note | Covers |
 | --- | --- |
-| [VN engine corpus](engines/vn-engine-corpus.md) | 21 reimplementations/decompilations and 24 shipped executables, split into engine logic vs boilerplate vs middleware; what a new engine actually costs. |
+| [VN engine corpus](engines/vn-engine-corpus.md) | 31 reimplementations/decompilations and 24 shipped executables, split into engine logic vs boilerplate vs middleware; what a new engine actually costs. |
 | [Open questions](notes/open-questions.md) | What is still not established on each engine page, and what evidence would close it. |
 
 ## How to read these notes

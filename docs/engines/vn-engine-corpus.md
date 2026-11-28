@@ -30,7 +30,7 @@ measurements instead of guesses.
 
 Two independent data sets are combined:
 
-1. **Source side** — 21 public projects that either *are* a visual novel engine
+1. **Source side** — 31 public projects that either *are* a visual novel engine
    (released source or a port) or *reimplement* one (a playable rewrite, or a matching
    decompilation that reproduces the original binary function by function).
 2. **Binary side** — the shipped executables of the games actually sitting in the local
@@ -72,41 +72,69 @@ All repositories were cloned at `--depth 1` on 2026-11-28; commits are the first
 characters of the pinned HEAD. Counts are tokei *code* lines (comments and blanks are not
 included), so they are directly comparable across languages.
 
-| Project | Target engine | Kind | Licence | Commit | Engine | Boilerplate | Middleware | SDK/CRT | Third-party | Data | Tooling |
-| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| [Persona 4 decompilation](https://github.com/Raikaru/Persona4-Decompilation) | Atlus Persona 4 (PS2) | matching decomp | none | `3a28140` | 510,869 | 0 | 260,228 | 8,760 | 1,586 | 0 | 1,270,042 |
-| [Persona 3 FES decompilation](https://github.com/Raikaru/Persona3-FES-Decompilation) | Atlus Persona 3 FES (PS2) | matching decomp | CC0-1.0 | `81da989` | 443,007 | 0 | 181,684 | 18,416 | 0 | 0 | 51,952 |
-| [siglus-rs](https://github.com/Lulzx/siglus-rs) | Siglus, RealLive, UK2, AVG32 | reimplementation | MPL-2.0 | `88f9cee` | 376,044 | 16,263 | 0 | 0 | 65,891 | 65,992 | 19,136 |
-| [cmvs-rs](https://github.com/astudyinyellow/cmvs-rs) | CMVS | reimplementation | Apache-2.0/MIT | `af64920` | 180,646 | 14,613 | 0 | 0 | 0 | 0 | 6,142 |
-| [Hotel Dusk decompilation](https://github.com/usename00/hotel-dusk-decomp) | Cing (DS) | matching decomp | none | `dcd74d8` | 127,496 | 1,182 | 0 | 0 | 0 | 0 | 376 |
-| [Impacto](https://github.com/CommitteeOfZero/impacto) | MAGES. / 5pb. | reimplementation | ISC | `ad20204` | 124,256 | 5,245 | 0 | 0 | 59,822 | 0 | 0 |
-| [OpenBGI](https://github.com/uyjulian/openbgi) | BGI/Ethornell | reimplementation | GPL-2.0 | `e6e9e24` | 119,784 | 27,482 | 0 | 0 | 0 | 0 | 31,079 |
-| [KiriKiri Z](https://github.com/krkrz/krkrz) | KiriKiri | released source | BSD-3 (W.Dee) | `fd5c4ba` | 113,725 | 36,872 | 0 | 0 | 774 | 0 | 2,527 |
-| [xsystem4](https://github.com/nunuhara/xsystem4) | AliceSoft System 4 | reimplementation | GPL-2.0 | `d3f93bc` | 74,553 | 0 | 0 | 0 | 1,135 | 0 | 0 |
-| [Ace Attorney 2 decompilation](https://github.com/atasro2/pwaa2) | Capcom AA2 (GBA) | matching decomp | none | `91cd5f6` | 42,838 (+115,044 asm) | 0 | 0 | 0 | 0 | 2,179 asm | 9,242 |
-| [rlvm](https://github.com/eglaysher/rlvm) | RealLive | reimplementation | GPL-3.0 | `e38cda7` | 42,479 | 2,138 | 0 | 0 | 83,260 | 0 | 9,213 |
-| [xsystem35-sdl2](https://github.com/kichikuou/xsystem35-sdl2) | AliceSoft System 3.x | reimplementation | GPL-2.0 | `4cabebf` | 41,053 | 2,813 | 0 | 0 | 1,234 | 0 | 0 |
-| [KiriKiri SDL2 port](https://github.com/krkrz/krkrsdl2) | KiriKiri | port | MIT | `8cea182` | 35,863 | 670 | 0 | 0 | 0 | 1,371 | 0 |
-| [shiinario-rs](https://github.com/kiKiRei/ShiinaRio) | ShiinaRio | reimplementation | MIT | `3e560c6` | 34,424 | 1,015 | 0 | 0 | 4,867 | 0 | 0 |
-| [ai5-sdl2](https://github.com/b-stack/ai5-sdl2) | Elf ai5 (PC-98, Windows) | reimplementation | GPL-3.0 | `ad7a703` | 30,804 | 3,596 | 0 | 0 | 0 | 0 | 0 |
-| [Ace Attorney decompilation](https://github.com/atasro2/pwaa1) | Capcom AA (GBA) | matching decomp | none | `744219a` | 30,384 (+1,726 asm) | 0 | 0 | 0 | 0 | 54,577 asm | 9,242 |
-| [VileVN](https://sourceforge.net/p/vilevn/) | TLove / GSS | released source | GPL-3.0 | `f6e48d6` | 24,218 | 9,258 | 0 | 0 | 20,735 | 0 | 7,688 |
-| Xuse engine sources | XLVNS | released source | none | `7a4bc8f` | 18,805 | 0 | 0 | 0 | 0 | 0 | 2,344 |
-| [ONScripter](https://github.com/onscripter/onscripter) | NScripter | reimplementation | GPL-2.0 | `848a608` | 17,210 | 3,392 | 0 | 0 | 942 | 11,464 | 0 |
-| [libai5](https://github.com/b-stack/libai5) | Elf ai5 | reimplementation | GPL-3.0 | `779913d` | 9,320 | 0 | 0 | 0 | 0 | 0 | 0 |
-| [libnpengine](https://github.com/TriggerRokko/libnpengine) | Nitroplus | reimplementation | LGPL-3.0 | `da1a175` | 4,856 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Project | Target engine | Kind | Licence | Commit | Engine | Boilerplate | Middleware | SDK/CRT | Third-party | Data | Tooling | Note |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| [Digital Devil Saga decompilation](https://github.com/Megami-Decomps/dds-decomp) | Atlus SMT (PS2) | matching decomp | none | `e714912` | 580,796 | — | — | — | — | — | 57,107 |  |
+| [Persona 4 decompilation](https://github.com/Raikaru/Persona4-Decompilation) | Atlus SMT/Persona (PS2) | matching decomp | none | `3a28140` | 510,869 | — | 260,228 | 8,760 | 1,586 | — | 1,270,042 | engine share 65% of its own decomp |
+| [Persona 3 FES decompilation](https://github.com/Raikaru/Persona3-FES-Decompilation) | Atlus SMT/Persona (PS2) | matching decomp | CC0-1.0 | `81da989` | 443,007 | — | 181,684 | 18,416 | — | — | 51,952 | engine share 72% |
+| [KiriKiri 2](https://github.com/krkrz/krkr2) | KiriKiri | released source | GPL-2.0 | `dec49af` | 388,693 | — | — | — | 908,557 | — | 59,852 | trunk/ only; vendor/ and the branches/tags SVN copies excluded |
+| [siglus-rs](https://github.com/Lulzx/siglus-rs) | Siglus / RealLive / UK2 / AVG32 | reimplementation | MPL-2.0 | `88f9cee` | 376,044 | 16,263 | — | — | 65,891 | 65,992 | 19,136 |  |
+| [Shin Megami Tensei III decompilation](https://github.com/Megami-Decomps/smt3-decomp) | Atlus SMT (PS2) | matching decomp | none | `08ecf20` | 334,305 | — | — | — | — | — | 44,483 |  |
+| [Tokimeki Memorial decompilation](https://github.com/CosmicScribe64/tokimemo-ps1-decomp) | Konami Tokimeki Memorial (PS1) | matching decomp | CC0-1.0 | `3c60705` | 249,871 | — | — | — | — | 104,478 | 141,042 | drafts/ holds 4.28M mechanically generated C lines, excluded from engine |
+| [ethornell-rs](https://github.com/xmoezzz/ethornell-rs) | BGI/Ethornell | reimplementation | MPL-2.0 | `0b870c3` | 197,696 | 5,564 | — | — | 318,228 | — | — |  |
+| [Ghost Trick decompilation](https://github.com/liambsulliva/ghost-trick-vita) | Cing (DS) | matching decomp | none | `1b614d0` | 192,952 | 135,364 | — | — | — | — | 99,399 |  |
+| [cmvs-rs](https://github.com/astudyinyellow/cmvs-rs) | CMVS | reimplementation | Apache-2.0 OR MIT | `af64920` | 180,646 | 14,613 | — | — | — | — | 6,142 |  |
+| [Hotel Dusk decompilation](https://github.com/usename00/hotel-dusk-decomp) | Cing (DS) | matching decomp | none | `dcd74d8` | 127,496 | 1,182 | — | — | — | — | 376 |  |
+| [Impacto](https://github.com/CommitteeOfZero/impacto) | MAGES./5pb. | reimplementation | ISC | `ad20204` | 124,256 | 5,245 | — | — | 59,822 | — | — |  |
+| [OpenBGI](https://github.com/uyjulian/openbgi) | BGI/Ethornell | reimplementation | GPL-2.0 | `e6e9e24` | 119,784 | 27,482 | — | — | — | — | 31,079 |  |
+| [KiriKiri Z](https://github.com/krkrz/krkrz) | KiriKiri | released source | BSD-3-Clause (W.Dee) | `fd5c4ba` | 113,725 | 36,872 | — | — | 774 | — | 2,527 |  |
+| [Persona decompilation (PS1)](https://github.com/daanhenke/persona-psx) | Atlus Persona (PS1) | matching decomp | none | `dfd1cd4` | 113,307 | — | — | — | — | — | 1,922 |  |
+| [ikuradroid](https://github.com/VienDesuPorting/ikuradroid) | Ikura / VileVN port | port of released source | GPL-3.0 | `2dbde94` | 94,770 | 8,994 | — | — | 1,356,108 | — | — |  |
+| [xsystem4](https://github.com/nunuhara/xsystem4) | AliceSoft System 4 | reimplementation | GPL-2.0 | `d3f93bc` | 74,553 | — | — | — | 1,135 | — | — |  |
+| [Danganronpa decompilation](https://github.com/Pucas01/DISTRUST) | Spike Chunsoft Danganronpa (PSP) | matching decomp | CC0-1.0 | `5526cd4` | 53,201 | — | — | — | — | — | 25,814 |  |
+| [Ace Attorney 2 decompilation](https://github.com/atasro2/pwaa2) | Capcom AA (GBA) | matching decomp | none | `91cd5f6` | 42,838 | — | — | — | — | — | 9,242 |  |
+| [rlvm](https://github.com/eglaysher/rlvm) | RealLive | reimplementation | GPL-3.0 | `e38cda7` | 42,479 | 2,138 | — | — | 83,260 | — | 9,213 |  |
+| [xsystem35-sdl2](https://github.com/kichikuou/xsystem35-sdl2) | AliceSoft System 3.x | reimplementation | GPL-2.0 | `4cabebf` | 41,053 | 2,813 | — | — | — | — | — |  |
+| [KiriKiri SDL2 port](https://github.com/krkrz/krkrsdl2) | KiriKiri | port of released source | MIT | `8cea182` | 35,863 | 670 | — | — | — | 1,371 | — |  |
+| [shiinario-rs](https://github.com/kiKiRei/ShiinaRio) | ShiinaRio | reimplementation | MIT | `3e560c6` | 34,424 | 1,015 | — | — | 4,867 | — | — |  |
+| [ai5-sdl2](https://github.com/b-stack/ai5-sdl2) | Elf ai5 (PC-98/Win) | reimplementation | GPL-3.0 | `ad7a703` | 30,804 | 3,596 | — | — | — | — | — |  |
+| [Ace Attorney decompilation](https://github.com/atasro2/pwaa1) | Capcom AA (GBA) | matching decomp | none | `744219a` | 30,384 | — | — | — | — | — | 9,242 |  |
+| [VileVN](https://sourceforge.net/p/vilevn/) | TLove / GSS | released source | GPL-3.0 | `f6e48d6` | 24,218 | 9,258 | — | — | 20,735 | — | 7,688 |  |
+| Xuse engine sources (no public repository) | Xuse XLVNS | released source | none | `7a4bc8f` | 18,805 | — | — | — | — | — | 2,344 |  |
+| [ONScripter](https://github.com/onscripter/onscripter) | NScripter | reimplementation | GPL-2.0 | `848a608` | 17,210 | 3,392 | — | — | 942 | 11,464 | — |  |
+| [libai5](https://github.com/b-stack/libai5) | Elf ai5 (PC-98/Win) | reimplementation | GPL-3.0 | `779913d` | 9,320 | — | — | — | — | — | — |  |
+| [libnpengine](https://github.com/TriggerRokko/libnpengine) | Nitroplus | reimplementation | LGPL-3.0 | `da1a175` | 4,856 | — | — | — | — | — | — |  |
+| [Shin Megami Tensei disassembly](https://github.com/spannerisms/smt1dasm) | Atlus SMT (SFC) | disassembly | GPL-3.0 | `6d950c0` | 3 | — | — | — | — | — | — | pure assembly listing |
 
 Raw rows, including the per-bucket file lists, are committed as
 [`source-loc.csv`](../data/vn-corpus/source-loc.csv).
 
 ### What the source numbers say
 
-**A playable reimplementation of a script-driven engine is 15k–45k lines.** ONScripter
-(NScripter) 17k, ai5-sdl2 31k, shiinario-rs 34k, krkrsdl2 36k, xsystem35 41k, rlvm 42k,
-xsystem4 74k. The engines above that are not "bigger engines" but *collections*: OpenBGI
-119k covers a dozen BGI revisions at once, Impacto 124k carries per-title compatibility
-profiles (23.6k) and per-game glue (23.6k), KiriKiri Z 114k includes the TJS2 compiler and
-four graphics backends, siglus-rs 376k is four engines plus two format decompilers.
+**A playable reimplementation of a script-driven engine is 9k–75k lines.** libai5 9k,
+ONScripter (NScripter) 17k, ai5-sdl2 31k, shiinario-rs 34k, krkrsdl2 36k, xsystem35 41k,
+rlvm 42k, xsystem4 75k. The engines above that are not "bigger engines" but *collections*:
+OpenBGI 120k covers a dozen BGI revisions at once, Impacto 124k carries per-title
+compatibility profiles (23.6k) and per-game glue (23.6k), KiriKiri Z 114k includes the TJS2
+compiler and four graphics backends, siglus-rs 376k is four engines plus two format
+decompilers.
+
+**A decompilation's line count is not engine size.** Tokimeki Memorial's repository is
+4.28M generated `drafts/` C lines against 250k hand-written `src` lines; the Ace Attorney
+projects carry 56k and 117k lines of assembly that are asset and script tables, not code;
+smt1dasm is a 251k-line assembly listing. Only the `src` side is comparable to a rewrite,
+which is why the two columns are kept apart.
+
+**One engine family, one line count per console generation.** The Atlus decomps trace the
+same engine growing: Persona (PS1) 113k, Persona 3 FES 443k, Persona 4 511k, Digital Devil
+Saga 581k. The two Cing decomps behave the same way: Hotel Dusk 127k, Ghost Trick 193k —
+same studio, next hardware, more engine.
+
+**Vendored code usually dwarfs the engine in a port.** ikuradroid is 95k engine lines over
+1.36M lines of vendored SDL/SDL_mixer/SDL_ttf/SDL_image/webp/mikmod, and KiriKiri 2 is 389k
+engine lines against 913k vendored lines (Irrlicht, SQLite, zlib, libjpeg, libsquirrel,
+libpsd) plus 540k Borland C++ Builder headers. KiriKiri Z's 114k is the same engine with
+that plugin zoo left out.
 
 **The original engine source is 3× the portable rewrite, and the extra is platform
 plumbing.** KiriKiri Z is 113,725 engine lines + 36,872 lines of `win32/` boilerplate;
@@ -192,6 +220,12 @@ boot, not a large engine; the engine itself is one of the smallest in the set.
 Code Geass's plain `BOOT.BIN` and its decrypted `EBOOT.BIN` produce the same section
 layout and the same code size (968,856 B), differing only in 340 bytes of container
 header. That is the best available confirmation that the PPSSPP dump route is lossless.
+
+`Observed`: three of the nine PSP copies are modified builds — Fate/Extra CCC and
+Evangelion Girl Friend 2nd carry English translation patches, and Persona 2 Innocent Sin
+is a DLC-enabler build. Their executables contain the patch's own code and graphics (the
+525 KB of rodata in Fate/Extra CCC is largely an inserted font), so those three figures are
+upper bounds; the unmodified Japanese executables are smaller.
 
 `Inferred`: the PSP binaries are 3–5× smaller than their PS2 siblings for the same series
 (Persona 3 Portable 3.65 MB vs Persona 3 FES 7.13 MB), which matches the reduced asset
@@ -348,13 +382,27 @@ no public source at all — the majority of the 113 open issues.
 
 ## Reproducing
 
-`tools/vn-corpus/` in this repository:
+`tools/vn-corpus/` holds the scripts used:
 
-- `make-tables.py` turns the raw bucket output into the committed CSVs.
-- `bucket.py` (same directory / scratch) applies the per-repo rule file and the
-  data-table heuristic.
-- The binary analyser parses ELF section headers and PE section tables directly; it does
-  not rely on `objdump` (which has no MIPS target on this host).
+- `topdirs.py REPO [depth] [minloc]` — per-directory tokei counts; this is how the
+  vendored subtrees (SDL in ikuradroid, Irrlicht in KiriKiri 2) were found.
+- `bucket.py REPO RULES.json OUT.csv` — per-file bucket assignment, longest matching
+  path prefix wins, plus the data-table heuristic that reclassifies a file as `data` when
+  at least 60% of its code lines are bare literals.
+- `analyze-bin.py OUT.csv FILE...` — ELF and PE section measurement plus the middleware
+  signal match. It parses section headers directly, so it does not need `objdump` (which
+  has no MIPS target on the machine used here).
+- `make-tables.py [RAW]` — assembles the committed CSVs from the raw bucket output.
 
-Per-file bucket rule files and the raw tokei JSON are kept out of the repository (they are
-large and regenerable); the aggregate CSVs are committed under `docs/data/vn-corpus/`.
+Counts are tokei 15.0.0 code lines; `TOKEI=/path/to/tokei` overrides the binary. Rule
+files and raw tokei JSON stay out of the repository (large, regenerable); the aggregates
+are committed under `docs/data/vn-corpus/`.
+
+Disc images: `chdman extractcd` (then strip the 2352-byte sectors to 2048, with MODE2
+form-1 user data at +24) or `chdman extractdvd`, list with 7-Zip, and pull `SLP?_*.*`,
+`*.IRX` and `IOPRP*.IMG`. PlayStation 2 executables carry no file extension.
+
+Encrypted PSP EBOOTs: PPSSPP writes the decrypted ELF to
+`PSP/SYSTEM/DUMP/<DISCID>_EBOOT.BIN` when `DumpFileTypes = 1` is set in the `[General]`
+section of `ppsspp.ini`. That route was used for the five titles whose `EBOOT.BIN` starts
+with the `~PSP` header.
