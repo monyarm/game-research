@@ -74,6 +74,7 @@ nav:
           - Archives: engines/honeybee/archives.md
           - Objects and textures: engines/honeybee/objects.md
           - Scripts: engines/honeybee/scripts.md
+      - "VN engine corpus: engine logic vs boilerplate": engines/vn-engine-corpus.md
   - Notes:
       - Open questions: notes/open-questions.md
 

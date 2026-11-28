@@ -1,0 +1,16 @@
+file,format,total,code,text,rodata,data,bss,imports,signals
+PS2/Love Hina Gorgeous - Chiratto Happening!! (Japan)/SLPM_652.92,ELF,1287964,815744,,,,,,sdk:PS2 libpad;sdk:PS2 libmc;sdk:PS2 libdma
+PS2/Persona_3_FES/SLUS_216.21,ELF,9096860,7134848,,,,,,middleware:CRI Sofdec;middleware:CRI MPEG;middleware:CRI M2V;middleware:CRI MPS;middleware:CRI CFG;middleware:CRI CFT;middleware:CRI SFH;sdk:PS2 libpad;sdk:PS2 libdma
+PS2/Persona_4/SLUS_217.82,ELF,8621084,6701696,,,,,,middleware:CRI Sofdec;middleware:CRI MPEG;middleware:CRI M2V;middleware:CRI MPS;middleware:CRI CFG;middleware:CRI CFT;middleware:CRI SFH;sdk:PS2 libpad;sdk:PS2 libdma
+PS2/Sugar Sugar Rune/SLPS_255.87,ELF,3096752,0,,,,,,middleware:CRI Sofdec;middleware:CRI MPEG;middleware:CRI M2V;middleware:CRI MPS;middleware:CRI CFG;middleware:CRI CFT;middleware:CRI SFH;sdk:PS2 libpad;sdk:PS2 libmc;sdk:PS2 libdma
+PS2/Zero no Tsukaima - Koakuma to Harukaze no Concerto (Japan) (Shokai Genteiban)/SLPS_257.08,ELF,1386560,1022768,1022768,47416,204584,379168,,third-party:Squirrel;sdk:PS2 libdma
+PS2/Zero no Tsukaima - Maigo no Period to Ikusen no Symphony (Japan)/SLPS_258.98,ELF,1292816,1025544,1025544,50528,68396,563288,,third-party:Squirrel;sdk:PS2 libdma
+PS2/Zero no Tsukaima - Muma ga Tsumugu Yokaze no Fantasy (Japan) (Genteiban)/SLPS_258.30,ELF,1232184,976392,976392,48736,68140,551960,,third-party:Squirrel;sdk:PS2 libdma
+Windows/Bible Black -La noche de walpurgis- (English)/bin/bblack.exe,PE,319488,200704,200704,8192,98304,,ADVAPI32.dll;GDI32.dll;IMM32.dll;KERNEL32.dll;SHELL32.dll;USER32.dll;WINMM.dll;comdlg32.dll;ole32.dll,crt:MSVC CRT
+Windows/Doukyuusei 2/AI5WIN.EXE,PE,415232,204800,204800,17920,165888,,ADVAPI32.dll;COMCTL32.dll;DDRAW.dll;DSOUND.dll;GDI32.dll;KERNEL32.dll;MSACM32.dll;SHELL32.dll;USER32.dll;WINMM.dll;WINSPOOL.DRV;comdlg32.dll,crt:MSVC CRT
+Windows/Elf Classics/SH1/AI5WIN.EXE,PE,446464,331776,331776,36864,28672,,ADVAPI32.dll;COMCTL32.dll;DDRAW.dll;DINPUT.dll;DSOUND.dll;GDI32.dll;KERNEL32.dll;MSACM32.dll;SHELL32.dll;USER32.dll;WINSPOOL.DRV;comdlg32.dll,crt:MSVC CRT
+Windows/Elf Classics/SH2/AI5WIN.EXE,PE,479232,356352,356352,36864,36864,,ADVAPI32.dll;COMCTL32.dll;DDRAW.dll;DINPUT.dll;DSOUND.dll;GDI32.dll;KERNEL32.dll;MSACM32.dll;SHELL32.dll;USER32.dll;WINSPOOL.DRV;comdlg32.dll,crt:MSVC CRT
+Windows/Elf Classics/YUNO/AI5WIN.EXE,PE,483328,335872,335872,36864,45056,,ADVAPI32.dll;COMCTL32.dll;DDRAW.dll;DINPUT.dll;DSOUND.dll;GDI32.dll;KERNEL32.dll;MSACM32.dll;SHELL32.dll;USER32.dll;WINMM.dll;WINSPOOL.DRV;comdlg32.dll,crt:MSVC CRT
+Windows/Isaku Renewal/AI5WIN.EXE,PE,479232,294912,294912,24576,20480,,ADVAPI32.dll;COMCTL32.dll;DDRAW.dll;DSOUND.dll;GDI32.dll;KERNEL32.dll;MSACM32.dll;SHELL32.dll;USER32.dll;WINSPOOL.DRV;comdlg32.dll,crt:MSVC CRT
+Windows/Shuusaku/syuusaku.exe,PE,253952,167936,167936,12288,49152,,DDRAW.dll;DSOUND.dll;GDI32.dll;KERNEL32.dll;MSACM32.dll;USER32.dll,crt:MSVC CRT
+Windows/DISCODE 2 - Niritsu Haihan/install.exe,PE,370176,307712,307712,512,19456,,ADVAPI32.DLL;COMCTL32.DLL;GDI32.DLL;KERNEL32.DLL;OLE32.DLL;OLEAUT32.DLL;USER32.DLL,crt:Borland
