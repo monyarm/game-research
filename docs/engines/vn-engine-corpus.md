@@ -34,7 +34,7 @@ Two independent data sets are combined:
    (released source or a port) or *reimplement* one (a playable rewrite, or a matching
    decompilation that reproduces the original binary function by function).
 2. **Binary side** — the shipped executables of the games actually sitting in the local
-   and remote libraries: **30 executables (13 PlayStation 2, 9 PSP, 8 Windows)** measured
+   and remote libraries: **31 executables (13 PlayStation 2, 9 PSP, 9 Windows)** measured
    section by section, plus size-only records for the cartridge and disc platforms where
    no separable executable exists.
 
@@ -274,6 +274,7 @@ resolution **and** a slimmer engine, not just smaller data.
 | Game | Executable | Total | Code | Compiler | ≈ LOC (10 B/line) |
 | --- | --- | ---: | ---: | --- | ---: |
 | Bible Black | `bblack.exe` | 319,488 | 200,704 | MSVC | ≈20,000 |
+| Doukyuusei | `AI5WIN_32bit_Color.exe` | 598,016 | 385,024 | MSVC | ≈39,000 |
 | Doukyuusei 2 | `AI5WIN.EXE` | 415,232 | 204,800 | MSVC | ≈20,000 |
 | Shuusaku | `syuusaku.exe` | 253,952 | 167,936 | MSVC | ≈17,000 |
 | Shizuku (Elf Classics) | `AI5WIN.EXE` | 446,464 | 331,776 | MSVC | ≈33,000 |
@@ -290,6 +291,13 @@ lines cover.
 `Observed`: that one engine grows from 167,936–204,800 B of code (Doukyuusei 2, Shuusaku,
 1992–94) to 294,912–356,352 B (1996–99) as script opcodes, higher-resolution graphics
 paths and voice playback were added. The binary name never changed.
+
+`Observed`: the 1992 Doukyuusei release is the largest ai5 build here at 385,024 B of
+code, and it ships as two 598,016-byte executables named `AI5WIN_32bit_Color.exe` and
+`AI5WIN_16bit_Color.exe` that differ in **two bytes**. Both are 32-bit PE files importing
+`DDRAW`/`DINPUT`/`DSOUND`; the "16-bit" name is a colour-depth switch, not a 16-bit
+binary. That is the widest gap in the set between what a filename suggests and what is
+actually inside.
 
 ### Older and cartridge platforms
 
