@@ -34,7 +34,7 @@ Two independent data sets are combined:
    (released source or a port) or *reimplement* one (a playable rewrite, or a matching
    decompilation that reproduces the original binary function by function).
 2. **Binary side** — the shipped executables of the games actually sitting in the local
-   and remote libraries: **25 executables (13 PlayStation 2, 11 PSP, 1 Windows)** measured
+   and remote libraries: **26 executables (13 PlayStation 2, 11 PSP, 2 Windows)** measured
    section by section, plus size-only records for the cartridge and disc platforms where
    no separable executable exists.
 
@@ -290,12 +290,22 @@ resolution **and** a slimmer engine, not just smaller data.
 | Game | Executable | Total | Code | Compiler | ≈ LOC (10 B/line) |
 | --- | --- | ---: | ---: | --- | ---: |
 | Bible Black | `bblack.exe` | 319,488 | 200,704 | MSVC | ≈20,000 |
+| DISCODE 2 | `Discode-2.exe`, extracted from the `_SETUP.1` package | 655,872 | 521,728 | Borland C++ | ≈52,000 |
 
-`Observed`: exactly one Windows executable survives the exclusions below. The Windows side of
-this corpus is thin by design: the 1990s Japanese PC market shipped almost everything on
-engines that are already covered elsewhere in this note, the remaining retail builds on disk
-are ai5, and the one other title (DISCODE 2) is present only as an InstallShield 3
-package — an installer is not an engine, so it is not counted.
+`Observed`: two Windows executables survive the exclusions below. The Windows side of this
+corpus is thin by design: the 1990s Japanese PC market shipped almost everything on engines
+that are already covered elsewhere in this note, and the rest of the retail builds on disk
+are ai5.
+
+The DISCODE 2 copy is an InstallShield 3 package, so it needed unpacking before it could be
+measured at all. The payload is not in the `setup.exe` (a 16-bit NE stub that Wine cannot run
+on this host) but in the sibling `_SETUP.1` (365 MB) and `_SETUP.LIB`, both starting with the
+IS3 signature `13 5d 65 8c`; `idecomp` lists and extracts them, and `Group1/Discode-2.exe` is
+a normal 32-bit PE of 655,872 B. Its bytecode strings (`System::TObject`, `TBitmap`,
+`CMesWindow`, `CDSound`) make it a Borland C++ Builder / Delphi VCL title, and it imports
+`DSOUND`, `WINMM` and `COMCTL32`. Note the inversion: the *shipped* executable is 2× the size
+of Bible Black's, while the installer that hides it is 365 MB — a package size tells you
+nothing about engine size.
 
 **ai5 is out of scope here.** The eight Elf titles in the local library (Doukyuusei,
 Doukyuusei 2, Shuusaku, Shizuku, Kizuato, YU-NO, Isaku) were measured — they are the same
@@ -306,16 +316,16 @@ The raw measurements stay in `executables-ps2-win.csv` for anyone who wants them
 
 ### Older and cartridge platforms
 
-These copies are ROM or disc images without a separable executable, so only sizes are
-recorded. `Observed`:
+These copies are ROM or disc images whose contents are not in a sectioned container, so in
+general only sizes are recorded. `Observed`:
 
 | Platform | Title | What is on disk | Size |
 | --- | --- | --- | --- |
 | DOS (1989) | J.B. Harold: Murder Club | four 16-bit DOS executables `CCLUB.EXE` / `ECLUB.EXE` / `HCLUB.EXE` / `TCLUB.EXE` plus `MCPLAYER`, `LOGO*` | 65,440 / 65,184 / 65,568 / 63,968 B |
 | Famicom | Akira | `.nes` ROM (Japan / English) | 393,232 / 524,304 B |
 | GBA | Love Hina Advance | `.gba` ROM | 8,388,608 B |
-| GameCube | Lupin III: Umi ni Kieta Hihou | data-only extract: `COMMON/`, `movie/*.thp`, `pfil.BIN`, `vfil.*`, `list.BIN` | no `main.dol` present |
-| Mega CD | Ranma 1/2: Byakuran Aika | data-only extract: 185 files, per-scene `*.BIN` (FIGHT/OP/P1-P3/PCM) plus the Mega CD `ABS.TXT`/`BIB.TXT`/`CPY.TXT` header strings | no disc image and no boot program |
+| GameCube | Lupin III: Umi ni Kieta Hihou | asset extract, 103 files: `COMMON/`, ~60 `movie/*.thp` (~1.0 GB disc 1, ~1.1 GB disc 2), `pfil.BIN`, `z/gfil.BIN` | disc system area absent: no `boot.bin`, `apploader.img` or `main.dol`, so no executable |
+| Mega CD | Ranma 1/2: Byakuran Aika | `LIBR.BIN` = 49,600 B of 68000 code, plus 184 graphics/audio files (`TITLE.BIN`, `P*_*.BIN`, `P*PCM*.BIN`) | 49,600 B program |
 | PC Engine CD | Sailor Moon / Ranma 1/2 / Toraware no Hanayome | `.bin` + `.cue` | 548,756,880 / 638,819,664 / 266,566,272 B |
 | PC-98 | Ranma 1/2: Hiryuu Densetsu | eight extracted disk directories plus `.d88` images | — |
 
@@ -328,6 +338,22 @@ is not recoverable without disassembly, so it stays a size only.
 small enough that a full disassembly would be the only way to split code from data, which
 is out of scope here; they are listed so the corpus is honest about what was *not*
 measured rather than silently dropping them.
+
+`Observed`: the Mega CD case is worth stating plainly, because a 49,600-byte program is the
+smallest full VN engine in this whole corpus. `LIBR.BIN` is 68000 machine code from its first
+instruction (`move.l #$288,$FFFD02`, then the Z80 bus request `move.w #$100,$A11200`) and
+contains no filename strings at all — the game addresses its data files through the CD BIOS
+file system. Everything else in the directory is graphics or CD audio. It has no section
+table, so 49,600 B is a size, not a code count; but the engine that drives a 1993 Mega CD
+visual novel fits in less space than one modern middleware codec.
+
+`Observed`: the GameCube copy cannot be measured because the executable is not in it. The
+rip keeps the disc's asset tree and its root-level `opening.bnr`, but the system area that
+makes the disc bootable — `boot.bin`, `bi2.bin`, `apploader.img`, `main.dol`, `fst.bin` — is
+absent, and a byte scan of all 103 files finds no DOL, ELF or PE header. Disc 1 totals about
+1.0 GB of assets against a 1.35 GB disc, so this is a full asset rip rather than a truncated
+one; the code was dropped deliberately, not lost. Extracting `main.dol` needs an actual
+`.iso`/`.gcm`/`.rvz` image of the disc, which neither library has.
 
 ### How these map onto the NovelVM backlog
 
