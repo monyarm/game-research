@@ -1,0 +1,23 @@
+file,format,total,code,text,rodata,data,bss,imports,signals
+ppsspp/config/ppsspp/PSP/SYSTEM/DUMP/NPJH50565_EBOOT.BIN,ELF,1109120,675700,674412,169720,38391,1339337,,
+ppsspp/config/ppsspp/PSP/SYSTEM/DUMP/NPJH50753_EBOOT.BIN,ELF,4758624,632692,631332,340312,3618901,19525060,,
+ppsspp/config/ppsspp/PSP/SYSTEM/DUMP/ULJS00135_EBOOT.BIN,ELF,1543504,968856,967456,0,250508,0,,middleware:CRI ADX
+ppsspp/config/ppsspp/PSP/SYSTEM/DUMP/ULUS10432_EBOOT.BIN,ELF,3836464,1561680,1560072,937784,582356,739120,,
+ppsspp/config/ppsspp/PSP/SYSTEM/DUMP/ULUS10512_EBOOT.BIN,ELF,5849808,3654068,3652236,206636,543148,1885672,,middleware:CRI ADX
+/home/monyarm/Games/Visual Novel/PSP/Code_Geass_Lost_Colors/PSP_GAME/SYSDIR/BOOT.BIN,ELF,1543164,968856,967456,0,250508,0,,middleware:CRI ADX
+/home/monyarm/Games/Visual Novel/PSP/Fate Extra CCC (English v1.0)/PSP_GAME/SYSDIR/BOOT.BIN,other:00000000,2858833,,,,,,,
+/home/monyarm/Games/Visual Novel/PSP/Meitantei_Conan_Kakokara_no_Zensou_Kyoku/PSP_GAME/SYSDIR/BOOT.BIN,other:00000000,1108773,,,,,,,
+/home/monyarm/Games/Visual Novel/PSP/Persona 2 Innocent Sin (USA) DLC enabler mod (v3)/PSP_GAME/SYSDIR/BOOT.BIN,other:00000000,6307564,,,,,,,
+/home/monyarm/Games/Visual Novel/PSP/Shin_Megami_Tensei_Persona_3_Portable_USA_PSP-PSPKiNG/PSP_GAME/SYSDIR/BOOT.BIN,other:00000000,5849468,,,,,,,
+/home/monyarm/Games/Visual Novel/PSP/Shin_Megami_Tensei_Persona_USA_PSP-EMiNENT/PSP_GAME/SYSDIR/BOOT.BIN,other:00000000,3836128,,,,,,,
+/home/monyarm/Games/Visual Novel/PSP/Shinseiki_Evangelion_Koutetsu_no_Girl_Friend_2nd_Portable_Eng_v101/PSP_GAME/SYSDIR/BOOT.BIN,other:00000000,395492,,,,,,,
+/home/monyarm/Games/Visual Novel/PSP/Tiger_and_Bunny_Heros_Day/PSP_GAME/SYSDIR/BOOT.BIN,other:00000000,4758273,,,,,,,
+/home/monyarm/Games/Visual Novel/PSP/Code_Geass_Lost_Colors/PSP_GAME/SYSDIR/EBOOT.BIN,~PSP(encrypted),1543504,,,,,,,
+/home/monyarm/Games/Visual Novel/PSP/Fate Extra CCC (English v1.0)/PSP_GAME/SYSDIR/EBOOT.BIN,ELF,2858833,1715708,1714092,525400,25424,1318660,,
+/home/monyarm/Games/Visual Novel/PSP/Meitantei_Conan_Kakokara_no_Zensou_Kyoku/PSP_GAME/SYSDIR/EBOOT.BIN,~PSP(encrypted),1109120,,,,,,,
+/home/monyarm/Games/Visual Novel/PSP/Persona 2 - Eternal Punishment (English v1.00)[English Dub]/PSP_GAME/SYSDIR/EBOOT.BIN,ELF,7188616,3881364,3879604,773540,815300,605468,,
+/home/monyarm/Games/Visual Novel/PSP/Persona 2 Innocent Sin (USA) DLC enabler mod (v3)/PSP_GAME/SYSDIR/EBOOT.BIN,ELF,9092912,3487048,3484936,513908,837580,542048,,
+/home/monyarm/Games/Visual Novel/PSP/Shin_Megami_Tensei_Persona_3_Portable_USA_PSP-PSPKiNG/PSP_GAME/SYSDIR/EBOOT.BIN,~PSP(encrypted),5849808,,,,,,,
+/home/monyarm/Games/Visual Novel/PSP/Shin_Megami_Tensei_Persona_USA_PSP-EMiNENT/PSP_GAME/SYSDIR/EBOOT.BIN,~PSP(encrypted),3836464,,,,,,,
+/home/monyarm/Games/Visual Novel/PSP/Shinseiki_Evangelion_Koutetsu_no_Girl_Friend_2nd_Portable_Eng_v101/PSP_GAME/SYSDIR/EBOOT.BIN,ELF,395492,348060,347156,0,42740,0,,
+/home/monyarm/Games/Visual Novel/PSP/Tiger_and_Bunny_Heros_Day/PSP_GAME/SYSDIR/EBOOT.BIN,~PSP(encrypted),4758624,,,,,,,
