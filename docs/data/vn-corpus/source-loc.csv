@@ -22,11 +22,9 @@ rlvm,RealLive,reimplementation,GPL-3.0,e38cda7,https://github.com/eglaysher/rlvm
 xsystem35-sdl2,AliceSoft System 3.x,reimplementation,GPL-2.0,4cabebf,https://github.com/kichikuou/xsystem35-sdl2,41053,2813,0,0,0,0,0,0,0,
 KiriKiri SDL2 port,KiriKiri,port of released source,MIT,8cea182,https://github.com/krkrz/krkrsdl2,35863,670,0,0,0,1371,0,0,0,
 shiinario-rs,ShiinaRio,reimplementation,MIT,3e560c6,https://github.com/kiKiRei/ShiinaRio,34424,1015,0,0,4867,0,0,0,0,
-ai5-sdl2,Elf ai5 (PC-98/Win),reimplementation,GPL-3.0,ad7a703,https://github.com/b-stack/ai5-sdl2,30804,3596,0,0,0,0,0,0,0,
 Ace Attorney decompilation,Capcom AA (GBA),matching decomp,none,744219a,https://github.com/atasro2/pwaa1,30384,0,0,0,0,0,9242,0,56303,
 VileVN,TLove / GSS,released source,GPL-3.0,f6e48d6,https://sourceforge.net/p/vilevn/,24218,9258,0,0,20735,0,7688,23681,0,
 Xuse engine sources,Xuse XLVNS,released source,none,7a4bc8f,(no public repository),18805,0,0,0,0,0,2344,0,0,
 ONScripter,NScripter,reimplementation,GPL-2.0,848a608,https://github.com/onscripter/onscripter,17210,3392,0,0,942,11464,0,0,0,
-libai5,Elf ai5 (PC-98/Win),reimplementation,GPL-3.0,779913d,https://github.com/b-stack/libai5,9320,0,0,0,0,0,0,0,0,
 libnpengine,Nitroplus,reimplementation,LGPL-3.0,da1a175,https://github.com/TriggerRokko/libnpengine,4856,0,0,0,0,0,0,0,0,
 Shin Megami Tensei disassembly,Atlus SMT (SFC),disassembly,GPL-3.0,6d950c0,https://github.com/spannerisms/smt1dasm,3,0,0,0,0,0,0,0,251146,pure assembly listing

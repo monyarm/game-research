@@ -30,11 +30,11 @@ measurements instead of guesses.
 
 Two independent data sets are combined:
 
-1. **Source side** — 31 public projects that either *are* a visual novel engine
+1. **Source side** — 29 public projects that either *are* a visual novel engine
    (released source or a port) or *reimplement* one (a playable rewrite, or a matching
    decompilation that reproduces the original binary function by function).
 2. **Binary side** — the shipped executables of the games actually sitting in the local
-   and remote libraries: **33 executables (13 PlayStation 2, 11 PSP, 9 Windows)** measured
+   and remote libraries: **25 executables (13 PlayStation 2, 11 PSP, 1 Windows)** measured
    section by section, plus size-only records for the cartridge and disc platforms where
    no separable executable exists.
 
@@ -97,12 +97,10 @@ included), so they are directly comparable across languages.
 | [xsystem35-sdl2](https://github.com/kichikuou/xsystem35-sdl2) | AliceSoft System 3.x | reimplementation | GPL-2.0 | `4cabebf` | 41,053 | 2,813 | — | — | — | — | — |  |
 | [KiriKiri SDL2 port](https://github.com/krkrz/krkrsdl2) | KiriKiri | port of released source | MIT | `8cea182` | 35,863 | 670 | — | — | — | 1,371 | — |  |
 | [shiinario-rs](https://github.com/kiKiRei/ShiinaRio) | ShiinaRio | reimplementation | MIT | `3e560c6` | 34,424 | 1,015 | — | — | 4,867 | — | — |  |
-| [ai5-sdl2](https://github.com/b-stack/ai5-sdl2) | Elf ai5 (PC-98/Win) | reimplementation | GPL-3.0 | `ad7a703` | 30,804 | 3,596 | — | — | — | — | — |  |
 | [Ace Attorney decompilation](https://github.com/atasro2/pwaa1) | Capcom AA (GBA) | matching decomp | none | `744219a` | 30,384 | — | — | — | — | — | 9,242 |  |
 | [VileVN](https://sourceforge.net/p/vilevn/) | TLove / GSS | released source | GPL-3.0 | `f6e48d6` | 24,218 | 9,258 | — | — | 20,735 | — | 7,688 |  |
 | Xuse engine sources (no public repository) | Xuse XLVNS | released source | none | `7a4bc8f` | 18,805 | — | — | — | — | — | 2,344 |  |
 | [ONScripter](https://github.com/onscripter/onscripter) | NScripter | reimplementation | GPL-2.0 | `848a608` | 17,210 | 3,392 | — | — | 942 | 11,464 | — |  |
-| [libai5](https://github.com/b-stack/libai5) | Elf ai5 (PC-98/Win) | reimplementation | GPL-3.0 | `779913d` | 9,320 | — | — | — | — | — | — |  |
 | [libnpengine](https://github.com/TriggerRokko/libnpengine) | Nitroplus | reimplementation | LGPL-3.0 | `da1a175` | 4,856 | — | — | — | — | — | — |  |
 | [Shin Megami Tensei disassembly](https://github.com/spannerisms/smt1dasm) | Atlus SMT (SFC) | disassembly | GPL-3.0 | `6d950c0` | 3 | — | — | — | — | — | — | pure assembly listing |
 
@@ -111,9 +109,9 @@ Raw rows, including the per-bucket file lists, are committed as
 
 ### What the source numbers say
 
-**A playable reimplementation of a script-driven engine is 9k–75k lines.** libai5 9k,
-ONScripter (NScripter) 17k, ai5-sdl2 31k, shiinario-rs 34k, krkrsdl2 36k, xsystem35 41k,
-rlvm 42k, xsystem4 75k. The engines above that are not "bigger engines" but *collections*:
+**A playable reimplementation of a script-driven engine is 17k–75k lines.** ONScripter
+(NScripter) 17k, shiinario-rs 34k, krkrsdl2 36k, xsystem35 41k, rlvm 42k, xsystem4 75k.
+The engines above that are not "bigger engines" but *collections*:
 OpenBGI 120k covers a dozen BGI revisions at once, Impacto 124k carries per-title
 compatibility profiles (23.6k) and per-game glue (23.6k), KiriKiri Z 114k includes the TJS2
 compiler and four graphics backends, siglus-rs 376k is four engines plus two format
@@ -168,9 +166,10 @@ subtract the identified middleware share (P4: 35%) to get engine logic.
 
 `Observed`: P4 6,701,696 B `.text`, 781,443 C lines → 8.6 B/line.
 `Observed`: P3 FES 7,134,848 B `.text`, 643,107 C lines → 11.1 B/line.
-`Observed`: ai5-sdl2 is 30,804 lines (of which `doukyuusei2_pal.c` alone is 8,022 lines of
-palette data) against 204,800 B `.text` in `AI5WIN.EXE` → 6.7 B/line raw, ≈9.3 excluding
-the palette table — the same order, on x86.
+`Observed`: ai5-sdl2, measured but kept out of the table because NovelVM already implements
+ai5, is 30,804 lines (of which `doukyuusei2_pal.c` alone is 8,022 lines of palette data)
+against 204,800 B `.text` in `AI5WIN.EXE` → 6.7 B/line raw, ≈9.3 excluding the palette
+table — the same order, on x86.
 `Inferred`: therefore ~10 B/line for PS2, PSP and PC alike.
 
 ## Shipped binaries
@@ -291,30 +290,19 @@ resolution **and** a slimmer engine, not just smaller data.
 | Game | Executable | Total | Code | Compiler | ≈ LOC (10 B/line) |
 | --- | --- | ---: | ---: | --- | ---: |
 | Bible Black | `bblack.exe` | 319,488 | 200,704 | MSVC | ≈20,000 |
-| Doukyuusei | `AI5WIN_32bit_Color.exe` | 598,016 | 385,024 | MSVC | ≈39,000 |
-| Doukyuusei 2 | `AI5WIN.EXE` | 415,232 | 204,800 | MSVC | ≈20,000 |
-| Shuusaku | `syuusaku.exe` | 253,952 | 167,936 | MSVC | ≈17,000 |
-| Shizuku (Elf Classics) | `AI5WIN.EXE` | 446,464 | 331,776 | MSVC | ≈33,000 |
-| Kizuato (Elf Classics) | `AI5WIN.EXE` | 479,232 | 356,352 | MSVC | ≈36,000 |
-| YU-NO (Elf Classics) | `AI5WIN.EXE` | 483,328 | 335,872 | MSVC | ≈34,000 |
-| Isaku (renewal) | `AI5WIN.EXE` | 479,232 | 294,912 | MSVC | ≈29,000 |
-| DISCODE 2 (installer only) | `install.exe` | 370,176 | 307,712 | Borland | — |
 
-`Observed`: every Elf title in this set — 1992 to 1999 — ships the *same* executable name,
-`AI5WIN.EXE`, and the same mid-1990s DirectDraw/DirectSound import set. They are all ai5,
-one engine across seven years and nine games, which is exactly what ai5-sdl2's 30,804
-lines cover.
+`Observed`: exactly one Windows executable survives the exclusions below. The Windows side of
+this corpus is thin by design: the 1990s Japanese PC market shipped almost everything on
+engines that are already covered elsewhere in this note, the remaining retail builds on disk
+are ai5, and the one other title (DISCODE 2) is present only as an InstallShield 3
+package — an installer is not an engine, so it is not counted.
 
-`Observed`: that one engine grows from 167,936–204,800 B of code (Doukyuusei 2, Shuusaku,
-1992–94) to 294,912–356,352 B (1996–99) as script opcodes, higher-resolution graphics
-paths and voice playback were added. The binary name never changed.
-
-`Observed`: the 1992 Doukyuusei release is the largest ai5 build here at 385,024 B of
-code, and it ships as two 598,016-byte executables named `AI5WIN_32bit_Color.exe` and
-`AI5WIN_16bit_Color.exe` that differ in **two bytes**. Both are 32-bit PE files importing
-`DDRAW`/`DINPUT`/`DSOUND`; the "16-bit" name is a colour-depth switch, not a 16-bit
-binary. That is the widest gap in the set between what a filename suggests and what is
-actually inside.
+**ai5 is out of scope here.** The eight Elf titles in the local library (Doukyuusei,
+Doukyuusei 2, Shuusaku, Shizuku, Kizuato, YU-NO, Isaku) were measured — they are the same
+`AI5WIN.EXE`, 167,936–385,024 B of code across 1992–1999, which is a good demonstration
+that one engine scales slowly — but they are excluded from the tables because ai5 is
+already implemented in NovelVM, so it contributes nothing to a remaining-cost estimate.
+The raw measurements stay in `executables-ps2-win.csv` for anyone who wants them.
 
 ### Older and cartridge platforms
 
@@ -327,7 +315,7 @@ recorded. `Observed`:
 | Famicom | Akira | `.nes` ROM (Japan / English) | 393,232 / 524,304 B |
 | GBA | Love Hina Advance | `.gba` ROM | 8,388,608 B |
 | GameCube | Lupin III: Umi ni Kieta Hihou | data-only extract: `COMMON/`, `movie/*.thp`, `pfil.BIN`, `vfil.*`, `list.BIN` | no `main.dol` present |
-| Mega CD | Ranma 1/2: Byakuran Aika | data-only extract: per-scene `*.BIN` (FIGHT/OP/P1-P3/PCM) plus `IP.BIN` sidecars | no disc image or loader |
+| Mega CD | Ranma 1/2: Byakuran Aika | data-only extract: 185 files, per-scene `*.BIN` (FIGHT/OP/P1-P3/PCM) plus the Mega CD `ABS.TXT`/`BIB.TXT`/`CPY.TXT` header strings | no disc image and no boot program |
 | PC Engine CD | Sailor Moon / Ranma 1/2 / Toraware no Hanayome | `.bin` + `.cue` | 548,756,880 / 638,819,664 / 266,566,272 B |
 | PC-98 | Ranma 1/2: Hiryuu Densetsu | eight extracted disk directories plus `.d88` images | — |
 
@@ -353,8 +341,9 @@ and [#17](https://github.com/monyarm/NovelVM/issues/17); Zero no Tsukaima PS2
 [#90](https://github.com/monyarm/NovelVM/issues/90); Meitantei Conan
 [#77](https://github.com/monyarm/NovelVM/issues/77); Tiger & Bunny
 [#89](https://github.com/monyarm/NovelVM/issues/89); Evangelion Girl Friend
-[#47](https://github.com/monyarm/NovelVM/issues/47); the ai5 Windows titles
-[#35](https://github.com/monyarm/NovelVM/issues/35).
+[#47](https://github.com/monyarm/NovelVM/issues/47); and the ai5 Windows titles
+[#35](https://github.com/monyarm/NovelVM/issues/35), which are measured but excluded from
+the tables below.
 
 Of those, Zero no Tsukaima (Soalo) and Sugar Sugar Rune (HoneyBee) already have engine
 pages on this site; the Persona, Fate/Extra, Code Geass, Conan, Tiger & Bunny and
@@ -390,8 +379,6 @@ Working from the measured engine-logic numbers, not from repository size:
 | Family | Measured engine logic | Port shape |
 | --- | ---: | --- |
 | NScripter | 17k (ONScripter) | small VM, text, one image format |
-| Elf ai5 | 31k + 9k libai5 (9 titles) | done in NovelVM (30k) |
-| Elf ai5 / ai5-sdl2 parity | — | confirms the 30k figure is the whole engine |
 | ShiinaRio | 34k | — |
 | KiriKiri | 36k (portable) / 114k (original) | TJS2 is most of the original |
 | RealLive | 42k (rlvm) | — |
@@ -410,8 +397,8 @@ Working from the measured engine-logic numbers, not from repository size:
 | Nitroplus/Soalo/HoneyBee | no public engine source | measured only from binaries |
 
 **The headline.** For the script-driven engines that make up most of the NovelVM backlog,
-the engine logic lands between **15,000 and 45,000 lines** — the same order as ai5, which
-was ported in one branch. The expensive engines are not "visual novels" but hybrids
+the engine logic lands between **15,000 and 45,000 lines** — the same order as ai5, the one family
+on this list that NovelVM has already finished. The expensive engines are not "visual novels" but hybrids
 (Persona at ~500k, CMVS at ~180k, BGI and MAGES at ~100k because they support a dozen
 revisions each), and in those cases the extra is mostly per-title compatibility code,
 which a port can add one game at a time.
@@ -434,6 +421,15 @@ no public source at all — the majority of the 113 open issues.
   game overstates a single title's cost.
 - **Ace Attorney 2's 115k lines are assembly**, not C. They are engine logic, but they are
   counted separately so the C column stays comparable.
+- **The binary code figures are gross `.text`.** Unlike the source side, they are *not*
+  net of statically linked libraries, CRT or middleware: a PS2 binary's `.text` includes
+  libpad/libmc/libdma, CRI's ADX and Sofdec modules, and the compiler runtime exactly like
+  the game code. Subtracting them needs link-level attribution that a stripped retail ELF
+  does not carry. The one attempt that can be made — summing named functions in the Persona 4
+  decompilation's symbol table — attributes only 81.6% of `.text` to placeholder names and
+  finds 80 KB of it in recognised CRI functions against 156k lines of CRI source, so it is a
+  lower bound, not a usable subtraction. Treat the ≈ LOC columns for middleware-heavy titles
+  (Persona, Zero no Tsukaima, S.Y.K) as upper bounds.
 - **The "≈ LOC" columns are estimates**, converting code bytes at 10 bytes/line, the
   midpoint of the 8.6–11.1 range bracketed by the two Persona decompilations. They are
   labelled as estimates everywhere and are never presented as measurements.

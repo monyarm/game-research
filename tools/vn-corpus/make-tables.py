@@ -20,8 +20,6 @@ META = {
     "hotel-dusk-decomp": ("Hotel Dusk decompilation", "https://github.com/usename00/hotel-dusk-decomp", "none", "dcd74d8", "Cing (DS)", "matching decomp"),
     "pwaa1": ("Ace Attorney decompilation", "https://github.com/atasro2/pwaa1", "none", "744219a", "Capcom AA (GBA)", "matching decomp"),
     "pwaa2": ("Ace Attorney 2 decompilation", "https://github.com/atasro2/pwaa2", "none", "91cd5f6", "Capcom AA (GBA)", "matching decomp"),
-    "ai5-sdl2": ("ai5-sdl2", "https://github.com/b-stack/ai5-sdl2", "GPL-3.0", "ad7a703", "Elf ai5 (PC-98/Win)", "reimplementation"),
-    "libai5": ("libai5", "https://github.com/b-stack/libai5", "GPL-3.0", "779913d", "Elf ai5 (PC-98/Win)", "reimplementation"),
     "onscripter": ("ONScripter", "https://github.com/onscripter/onscripter", "GPL-2.0", "848a608", "NScripter", "reimplementation"),
     "vilevn": ("VileVN", "https://sourceforge.net/p/vilevn/", "GPL-3.0", "f6e48d6", "TLove / GSS", "released source"),
     "krkrz": ("KiriKiri Z", "https://github.com/krkrz/krkrz", "BSD-3-Clause (W.Dee)", "fd5c4ba", "KiriKiri", "released source"),
