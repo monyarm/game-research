@@ -34,7 +34,7 @@ Two independent data sets are combined:
    (released source or a port) or *reimplement* one (a playable rewrite, or a matching
    decompilation that reproduces the original binary function by function).
 2. **Binary side** — the shipped executables of the games actually sitting in the local
-   and remote libraries: **31 executables (13 PlayStation 2, 9 PSP, 9 Windows)** measured
+   and remote libraries: **33 executables (13 PlayStation 2, 11 PSP, 9 Windows)** measured
    section by section, plus size-only records for the cartridge and disc platforms where
    no separable executable exists.
 
@@ -249,6 +249,23 @@ four ship plain ELFs already (their `BOOT.BIN` files are zero-filled placeholder
 | Meitantei Conan | `NPJH50565` | `EBOOT.BIN` | 1,109,120 | 675,700 | 169,720 | 38,391 | — | ≈68,000 |
 | Tiger & Bunny - Hero's Day | `NPJH50753` | `EBOOT.BIN` | 4,758,624 | 632,692 | 340,312 | 3,618,901 | — | ≈63,000 |
 | Evangelion: Koutetsu Girl Friend 2nd | — | `EBOOT.BIN` | 395,492 | 348,060 | 0 | 42,740 | — | ≈35,000 |
+
+Two further titles existed only as PSP disc images and were unpacked the same way
+(`chdman`, then 7-Zip on `PSP_GAME/SYSDIR`):
+
+| Title | Executable | Total | Code | data | Middleware found | ≈ LOC (10 B/line) |
+| --- | --- | ---: | ---: | ---: | --- | ---: |
+| Madoka Magica Portable | `EBOOT.BIN` | 3,260,116 | 2,700,284 | 553,236 | CRI ADX | ≈270,000 |
+| Suzumiya Haruhi no Yakusoku | `EBOOT.BIN` | 1,706,124 | 872,236 | 414,132 | CRI ADX | ≈87,000 |
+
+`Observed`: these two are 2.7× apart for the same generation of hardware and the same
+middleware, which is the widest spread inside the PSP set — anime-licence tie-in titles
+range from ~35,000 to ~270,000 lines of engine code in exactly the same format.
+
+A third disc-image title (Ore no Imouto, disc 1) was **not** measured: its `EBOOT.BIN` is
+encrypted and PPSSPP refuses to boot a stripped disc tree containing only
+`SYSDIR`/`PARAM.SFO` ("CPU_Init didn't recognize file"), so the decrypt route needs the
+complete image rather than the extracted module.
 
 `Observed`: Tiger & Bunny is the odd one out — 632,692 B of code against 3.6 MB of
 `data` and 19.5 MB of `bss`. That is a compressed payload decompressed into memory at
