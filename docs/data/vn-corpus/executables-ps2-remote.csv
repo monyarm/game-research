@@ -1,0 +1,4 @@
+file,format,total,code,text,rodata,data,bss,imports,signals
+ps2-remote/SLPM_627.77,ELF,4445632,354840,354840,67696,4014404,402860,,sdk:PS2 libpad;sdk:PS2 libmc;sdk:PS2 libdma
+ps2-remote/SLPM_669.23,ELF,4702272,356056,356056,67952,4269572,402860,,sdk:PS2 libpad;sdk:PS2 libmc;sdk:PS2 libdma
+ps2-remote/SLPS_255.91,ELF,940376,0,939648,0,0,0,,flat:stripped;sdk:PS2 libpad;sdk:PS2 libmc;sdk:PS2 libdma

@@ -109,6 +109,7 @@ def main():
 
     # executable side, straight copy of the raw measurements
     for src, dst in (("exe-ps2-win.csv", "executables-ps2-win.csv"),
+                     ("exe-ps2-remote.csv", "executables-ps2-remote.csv"),
                      ("exe-psp.csv", "executables-psp.csv")):
         p = os.path.join(RAW, src)
         if os.path.exists(p):

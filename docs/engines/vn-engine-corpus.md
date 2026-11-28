@@ -34,7 +34,7 @@ Two independent data sets are combined:
    (released source or a port) or *reimplement* one (a playable rewrite, or a matching
    decompilation that reproduces the original binary function by function).
 2. **Binary side** — the shipped executables of the games actually sitting in the local
-   and remote libraries: **24 executables (7 PlayStation 2, 9 PSP, 8 Windows)** measured
+   and remote libraries: **30 executables (13 PlayStation 2, 9 PSP, 8 Windows)** measured
    section by section, plus size-only records for the cartridge and disc platforms where
    no separable executable exists.
 
@@ -145,6 +145,14 @@ their own window/input/audio layer (that is the `boilerplate` column, typically 
 because SDL does the work). A NovelVM engine gets that for free and instead plugs into
 `Engines::Engine`, the detection tables and the meta-engine.
 
+**ScummVM's own engines land in the same band.** As an independent check on the whole
+exercise, the 132 ScummVM engine directories that contain code total 4,685,166 lines: a
+median of **16,593 lines per engine** and a mean of 35,494, with 80 of the 132 under
+25,000 and only 14 above 100,000. The projects measured above were mostly written against
+SDL or libretro rather than against ScummVM's `common/`, yet they arrive at the same
+distribution — which is the strongest evidence that the 15k–45k band is a property of the
+problem, not of these particular codebases.
+
 ## Cross-check: source lines versus shipped machine code
 
 The Persona 4 decompilation compiles to the retail `SLUS_217.82`, which makes it a
@@ -169,7 +177,7 @@ the palette table — the same order, on x86.
 
 ### PlayStation 2
 
-All six local titles are extracted directory copies; the executable is the `SLUS_*` /
+All seven local titles are extracted directory copies; the executable is the `SLUS_*` /
 `SLPS_*` ELF. Three of them still carry symbols (section names and, in P4/Persona 3 FES,
 whole middleware banners).
 
@@ -192,6 +200,36 @@ The three Zero no Tsukaima discs are the same engine at three revisions: 0.98–
 code each, of which the statically linked Squirrel interpreter is a fixed chunk. That is
 consistent with the Soalo research (see [the engine page](zero-no-tsukaima-soalo.md)) and
 with "one engine, three data discs".
+
+#### PlayStation 2 from disc images
+
+Six further PS2 titles existed only as `.chd` disc images and had to be unpacked before
+the executable could be measured. PS2 executables carry no file extension, so they only
+turn up by name pattern.
+
+| Title | Executable | Total | Code | Middleware found | ≈ LOC (10 B/line) |
+| --- | --- | ---: | ---: | --- | ---: |
+| D.C.II P.S. (Disc 2) | `SLPM_669.23` | 4,702,272 | 356,056 | libpad, libmc, libdma; 4.3 MB `.data` | ≈36,000 |
+| Harukaze P.S. | `SLPM_627.77` | 4,445,632 | 354,840 | libpad, libmc, libdma; 4.0 MB `.data` | ≈35,000 |
+| Meitantei Evangelion | `SLPM_665.74` | 3,710,768 | *n/a* | libpng, libdma | *n/a* |
+| Mai-Otome HiME | `SLPS_256.81` | 1,636,272 | *n/a* | none beyond the flat image | *n/a* |
+| Last Escort | `SLPS_255.91` | 940,376 | *n/a* | libpad, libmc, libdma | *n/a* |
+| S.Y.K Renshouden | `SLPM_552.47` | 8,070,056 | *n/a* | CRI Sofdec/MPEG/M2V/MPS/CFG/CFT/SFH; CRI movies and AFS audio on disc | *n/a* |
+
+Two of these are worth reading as warnings about file size. The Princess Soft "P.S."
+titles ship 4.4–4.7 MB executables whose `.text` is only ~355 KB: almost all of the file
+is a zeroed `.data` work buffer (≈1 % non-zero bytes, longest zero run 3.2 MB). Their
+`.text` sections are also only 4.3 % identical by 32-bit word, so despite the shared name
+they are not the same build.
+
+**Flat images are the norm, not the exception.** Five of the thirteen PS2 executables
+measured here (Sugar Sugar Rune, Meitantei Evangelion, Mai-Otome HiME, Last Escort, S.Y.K
+Renshouden) are a single unnamed `WAX` section covering the whole load image, with no
+symbols and no code/data boundary in the section table. S.Y.K is the extreme case: an
+8 MB executable of which 5.98 MB is one section, followed by a 2 MB zero gap and the
+section header table. Those five are all from smaller publishers and build toolchains,
+while every Atlus, Princess Soft and Zero no Tsukaima executable kept its sections — so
+the ability to measure a PS2 binary at all depends on who built it.
 
 ### PSP
 
@@ -374,7 +412,10 @@ no public source at all — the majority of the 113 open issues.
 - **The "≈ LOC" columns are estimates**, converting code bytes at 10 bytes/line, the
   midpoint of the 8.6–11.1 range bracketed by the two Persona decompilations. They are
   labelled as estimates everywhere and are never presented as measurements.
-- **HoneyBee's executable cannot be split** (stripped flat image), and no source exists.
+- **Five PS2 executables cannot be split** at all (Sugar Sugar Rune, Meitantei Evangelion,
+  Mai-Otome HiME, Last Escort, S.Y.K Renshouden): they are single-section flat images with
+  no symbol or section boundaries, so no code figure is quoted for them rather than
+  guessing one.
 - **VileVN's `src/tlove/hexrays.c` (23,681 lines) is decompiler output** and is excluded
   from the engine figure and from any reuse discussion.
 - Remote PS2 titles were extracted from CHD copies of the same games as the local set
@@ -393,6 +434,9 @@ no public source at all — the majority of the 113 open issues.
   signal match. It parses section headers directly, so it does not need `objdump` (which
   has no MIPS target on the machine used here).
 - `make-tables.py [RAW]` — assembles the committed CSVs from the raw bucket output.
+- `docs/data/vn-corpus/scummvm-engines.csv` — the per-engine breakdown of the local
+  ScummVM checkout, one row per `engines/` subdirectory that contains code, from the same
+  tokei run.
 
 Counts are tokei 15.0.0 code lines; `TOKEI=/path/to/tokei` overrides the binary. Rule
 files and raw tokei JSON stay out of the repository (large, regenerable); the aggregates
@@ -400,7 +444,10 @@ are committed under `docs/data/vn-corpus/`.
 
 Disc images: `chdman extractcd` (then strip the 2352-byte sectors to 2048, with MODE2
 form-1 user data at +24) or `chdman extractdvd`, list with 7-Zip, and pull `SLP?_*.*`,
-`*.IRX` and `IOPRP*.IMG`. PlayStation 2 executables carry no file extension.
+`*.IRX` and `IOPRP*.IMG`. PlayStation 2 executables carry no file extension. Where
+`extractcd` aborts part-way through a CD-mode image with subchannel data, `extractraw`
+still succeeds; its 2448-byte units then need the 96 subchannel bytes dropped before the
+2048-byte user data can be taken.
 
 Encrypted PSP EBOOTs: PPSSPP writes the decrypted ELF to
 `PSP/SYSTEM/DUMP/<DISCID>_EBOOT.BIN` when `DumpFileTypes = 1` is set in the `[General]`
